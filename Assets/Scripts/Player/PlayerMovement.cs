@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
    [Header("References")] 
    public PlayerMovementStats MoveStats;
 
-   [SerializeField] private Collider _feetColl;
+   [SerializeField] private BoxCollider _feetColl;
    [SerializeField] private Collider _bodyColl;
 
    private Rigidbody _rb;
@@ -55,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
       CountTimers();
       JumpChecks();
       
-      Debug.Log("Grounded: " + isGrounded);
+     
    }
 
    private void FixedUpdate()
@@ -300,13 +300,28 @@ public class PlayerMovement : MonoBehaviour
       Vector3 boxCastOrigin = new Vector3(_feetColl.bounds.center.x,_feetColl.bounds.min.y,0);
      // Vector3 boxCastSize = new Vector3(_feetColl.bounds.size.x,MoveStats.groundDetectionRayLength,0);
 
-      Vector3 halfExtents = new Vector3(
-         _feetColl.bounds.size.x / 2f, 
-         MoveStats.groundDetectionRayLength / 2f, 
-         _feetColl.bounds.size.z / 2f 
+      Vector3 halfExtents = _feetColl.size/2f;
+      
+      float checkHeight = (_feetColl.size.y / 2f) + MoveStats.groundDetectionRayLength;
+      
+   
+      Vector3 overlapHalfExtents = new Vector3(
+         halfExtents.x, 
+         checkHeight / 2f, 
+         halfExtents.z     
       );
-      isGrounded = Physics.BoxCast(boxCastOrigin, halfExtents, Vector3.down, out _groundhit, quaternion.identity,
-         MoveStats.groundDetectionRayLength, MoveStats.groundLayer );
+      
+      Vector3 center = _feetColl.bounds.center;
+      center.y -= MoveStats.groundDetectionRayLength+0.05f;
+      
+      Collider[] hits = Physics.OverlapBox(
+         center, 
+         overlapHalfExtents, 
+         Quaternion.identity, 
+         MoveStats.groundLayer // O LayerMask
+      );
+      
+      isGrounded = (hits.Length > 0);
     
       
    }
@@ -343,4 +358,51 @@ public class PlayerMovement : MonoBehaviour
       }
    }
    #endregion
+   
+   private void OnDrawGizmos()
+   {
+      // Apenas desenha se o script estiver a funcionar (opcional, mas bom)
+      if (!Application.isPlaying) 
+         return; 
+    
+      // Obtemos o collider dos pés, tal como fazemos no IsGrounded()
+      if (_feetColl == null) return;
+      BoxCollider feetBox = (BoxCollider)_feetColl;
+
+      // --- CÁLCULOS EXATOS DO OVERLAPBOX (REPETIMOS A LÓGICA DO ISGROUNDED) ---
+
+      // 1. Half Extents
+      Vector3 halfExtents = feetBox.size / 2f; 
+      float checkHeight = (feetBox.size.y / 2f) + MoveStats.groundDetectionRayLength;
+    
+      Vector3 overlapHalfExtents = new Vector3(
+         halfExtents.x, 
+         checkHeight / 2f, 
+         halfExtents.z     
+      );
+
+      // Se o Z for zero, aumentamos ligeiramente para visualizar no 3D
+      if (overlapHalfExtents.z == 0) overlapHalfExtents.z = 0.05f; 
+
+      // 2. Centro da Caixa
+      Vector3 center = feetBox.bounds.center;
+      center.y -= MoveStats.groundDetectionRayLength+0.05f;
+
+      // --- DESENHAR O GIZMO ---
+
+      // Cor: Vermelho se não houver colisão (isGrounded == false) e Verde se houver.
+      if (isGrounded)
+      {
+         Gizmos.color = new Color(0f, 1f, 0f, 0.5f); // Verde (transparente)
+      }
+      else
+      {
+         Gizmos.color = new Color(1f, 0f, 0f, 0.5f); // Vermelho (transparente)
+      }
+
+      // Desenha o cubo na posição e com o tamanho definido pelo OverlapBox.
+      // O Gizmos.DrawWireCube espera o tamanho total, não o halfExtents.
+      // Por isso, multiplicamos o halfExtents por 2.
+      Gizmos.DrawWireCube(center, overlapHalfExtents * 2f);
+   }
 }
