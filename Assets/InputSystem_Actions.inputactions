@@ -486,7 +486,7 @@
                 {
                     "name": "",
                     "id": "fca90c55-3611-4098-b77c-47dff16d563e",
-                    "path": "<Keyboard>/space",
+                    "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -497,7 +497,7 @@
                 {
                     "name": "",
                     "id": "abe291f7-8a05-4452-a0e9-c34731f1932f",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
