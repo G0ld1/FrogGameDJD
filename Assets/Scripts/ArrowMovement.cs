@@ -2,57 +2,70 @@ using UnityEngine;
 
 public class ArrowMovement : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-   
-
-    // Update is called once per frame
-
-    // Update is called once per frame
-    private RectTransform rectTransform; 
+private RectTransform rectTransform; 
+    
+    // Variável para armazenar a posição do objeto do mundo a seguir
+    private Transform targetTransform; 
+    
+    // Variável opcional para ajustar a altura da seta acima do alvo
+    public float verticalOffset = 1.5f; 
+    public float rotationOffset = -90f; // Comece com -90f ou 0f
 
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
     }
 
+    // --- NOVO: Função para definir o alvo ---
+    public void Initialize(Transform target)
+    {
+        targetTransform = target;
+    }
+
     void Update()
     {
-        // --- PASSO 1: Obter a posição do rato relativa ao mundo ---
-        // Isto é necessário porque o seu Canvas pode não ser 'Overlay'.
-        Vector3 mouseWorldPosition = Vector3.zero;
-    
-        // Obter a posição no mundo, convertida do ecrã
-        // (Isto depende do seu Canvas estar em Screen Space - Camera ou World Space.
-        // Para a maioria dos Canvas, ScreenPointToRay é mais seguro.)
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane plane = new Plane(Vector3.forward, rectTransform.position); // Usa o plano do elemento
-        float distance;
-
-        if (plane.Raycast(ray, out distance))
+        if (targetTransform == null)
         {
-            mouseWorldPosition = ray.GetPoint(distance);
+            gameObject.SetActive(false);
+            return;
         }
-    
-        // --- PASSO 2: Calcular a direção no plano XY ---
-        // A direção é do centro do elemento para a posição do rato no mundo.
-        Vector3 direction = mouseWorldPosition - transform.position;
-    
-        // Como estamos em 2.5D, ignoramos a profundidade Z
-        direction.z = 0; 
 
-        // --- PASSO 3: Calcular o ângulo em graus (Atan2) ---
+        // --- PASSO 1: Posicionar a Seta UI (Continua a funcionar) ---
+        Vector3 worldTargetPosition = targetTransform.position + Vector3.up * verticalOffset;
+        Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldTargetPosition);
+        rectTransform.position = screenPosition;
+
+
+        // --- PASSO 2: Rodar a Seta para Apontar para o Rato ---
+
+        // 2.1. Obter a posição do rato no mundo
+        Vector3 mouseWorldPosition = GetMouseWorldPosition();
+        
+        // 2.2. Calcular a direção: (Mouse Position) - (Arrow Position)
+        Vector3 direction = mouseWorldPosition - targetTransform.position;
+        direction.z = 0; // Garantir que a direção está no plano 2D
+
+        // 2.3. Calcular o ângulo (em graus)
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        // --- PASSO 4: Aplicar a Rotação ao RectTransform ---
-        // A rotação Z (Yaw) é o que faz o elemento girar no plano do ecrã.
-        // Subtraímos 90 graus porque o elemento UI padrão aponta para CIMA (+Y) 
-        // quando o ângulo é 90º. O Atan2 calcula a partir do eixo X.
-    
-        // Aplicação Final:
-        // **NOTA CRÍTICA:** Se a imagem não for um círculo ou ponto, pode precisar de um offset (-90f).
-        rectTransform.localEulerAngles = new Vector3(0, 0, angle); 
-    
-        // Se o elemento estiver virado para cima por padrão (como a maioria das imagens/sprites):
-        // rectTransform.localEulerAngles = new Vector3(0, 0, angle - 90f); 
+        // 2.4. Aplicar a Rotação com o Offset Ajustável
+        // O valor 0, 0, angle faria a seta apontar para a direita (0º)
+        rectTransform.localEulerAngles = new Vector3(0, 0, angle + rotationOffset);
+    }
+
+    // Função auxiliar (pode reutilizar a que tinha no PlayerMovement)
+    private Vector3 GetMouseWorldPosition()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Plane gamePlane = new Plane(Vector3.forward, Vector3.zero); 
+        float distance;
+
+        if (gamePlane.Raycast(ray, out distance))
+        {
+            Vector3 worldPosition = ray.GetPoint(distance);
+            worldPosition.z = 0; 
+            return worldPosition;
+        }
+        return Vector3.zero;
     }
 }

@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
    [SerializeField] private float BashPower;
    [SerializeField] private float BashTime;
    [SerializeField] private GameObject Arrow;
+   private ArrowMovement _arrowMovement;
    Vector3 BashDir;
    private float BashTimeReset;
    
@@ -48,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
    private float fastFallReleaseSpeed;
    private int numberofJumpsUsed;
    
+   
    //apex vars
    private float apexPoint;
    private float timepastApexThreshold;
@@ -65,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
       _isFacingRight = true;
       
       _rb = GetComponent<Rigidbody>();
+      _arrowMovement = Arrow.GetComponent<ArrowMovement>();
    }
 
    private void Update()
@@ -184,18 +187,18 @@ public class PlayerMovement : MonoBehaviour
         BashAbleObj.GetComponent<Renderer>().material.color = Color.yellow; 
         
         // Ativar o carregamento
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             Time.timeScale = 0;
             // 🚀 MUDANÇA: Escala 3D
             BashAbleObj.transform.localScale = new Vector3(1.4f, 1.4f, 1.4f); 
-            //Arrow.SetActive(true);
-          //  Arrow.transform.position = BashAbleObj.transform.position;
+           Arrow.SetActive(true);
+          _arrowMovement.Initialize(BashAbleObj.transform);
             IsChosingDir = true;
         }
         
         // Lançamento do Bash
-        else if (IsChosingDir && Input.GetKeyUp(KeyCode.Return))
+        else if (IsChosingDir && Input.GetKeyUp(KeyCode.Mouse1))
         {
             // 🚀 MUDANÇA: Resetar a escala 3D
             Time.timeScale = 1f;
@@ -239,7 +242,7 @@ public class PlayerMovement : MonoBehaviour
     
             _rb.AddForce(BashDir * BashPower, ForceMode.VelocityChange); 
           
-           // Arrow.SetActive(false);
+            Arrow.SetActive(false);
         }
     }
     else if (BashAbleObj != null)
@@ -447,10 +450,10 @@ private Vector3 GetMouseWorldPosition()
             isFalling = true;
          }
          
-         VerticalVelocity =+ MoveStats.Gravity*Time.fixedDeltaTime;
+         VerticalVelocity =+ MoveStats.Gravity*Time.fixedDeltaTime*MoveStats.fallfromledgemult;
       }
 
-      VerticalVelocity = Mathf.Clamp(VerticalVelocity, -MoveStats.maxFallSpeed, 50f);
+      VerticalVelocity = Mathf.Clamp(VerticalVelocity, -MoveStats.maxFallSpeed, 160f);
       
       _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, VerticalVelocity, _rb.linearVelocity.z);
    }

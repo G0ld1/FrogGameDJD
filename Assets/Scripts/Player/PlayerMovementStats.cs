@@ -33,6 +33,7 @@ public class PlayerMovementStats : ScriptableObject
     [Range(0.01f, 5f)] public float gravityonreleaseMultiplier = 2f;
     public float maxFallSpeed = 26f;
     [Range(1f, 5f)] public int numberofJumpsAllowed = 1;
+    public float fallfromledgemult;
     
     [Header("Jump Cut")]
     [Range(0.02f, 0.3f)] public float timeforUpwardsCancel = 0.027f;
