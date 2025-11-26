@@ -31,8 +31,14 @@ public class PlayerMovement : MonoBehaviour
    Vector3 BashDir;
    private float BashTimeReset;
    
+   [Header("Bash Refinamento")] 
+   private bool justBashed; 
+   public float bashGravityMultiplier = 0.5f; 
+   public float bashFloatTime = 0.2f;        
+   private float bashFloatTimer;
    
-   
+   [Header("Grapple Refinamento")] 
+   private bool isFloatingFromGrapple;
    
    //collision check vars
    private RaycastHit _groundhit;
@@ -61,9 +67,12 @@ public class PlayerMovement : MonoBehaviour
    
    //coyote time vars
    private float coyoteTimer;
+   
 
    private void Awake()
    {
+      
+
       _isFacingRight = true;
       
       _rb = GetComponent<Rigidbody>();
@@ -85,21 +94,34 @@ public class PlayerMovement : MonoBehaviour
    private void FixedUpdate()
    {
       CollisionChecks();
+      
+
+      if (IsChosingDir)
+         return;
+      
       Jump();
       
-      if(IsBashing == false)
-         _rb.linearVelocity = new Vector2(Dir * Time.deltaTime, _rb.linearVelocity.y);
       
-
-      if (isGrounded)
+         
+      if (isFloatingFromGrapple)
       {
-         Move(MoveStats.groundAcceleration, MoveStats.groundDeceleration,InputManager.movement);
+         return; 
       }
-      else
-      {
-         Move(MoveStats.AirAcceleration, MoveStats.AirDeceleration,InputManager.movement);
-
-      }
+         
+         if (!justBashed)
+         {
+            _rb.linearVelocity = new Vector2(Dir * Time.deltaTime, _rb.linearVelocity.y);
+             
+            if (isGrounded)
+            {
+               Move(MoveStats.groundAcceleration, MoveStats.groundDeceleration,InputManager.movement);
+            }
+            else
+            {
+               Move(MoveStats.AirAcceleration, MoveStats.AirDeceleration,InputManager.movement);
+            }
+         }
+         
    }
 
    #region Movement
@@ -200,49 +222,48 @@ public class PlayerMovement : MonoBehaviour
         // Lançamento do Bash
         else if (IsChosingDir && Input.GetKeyUp(KeyCode.Mouse1))
         {
-            // 🚀 MUDANÇA: Resetar a escala 3D
-            Time.timeScale = 1f;
-            BashAbleObj.transform.localScale = new Vector3(1f, 1f, 1f); 
-            IsChosingDir = false;
-            IsBashing = true;
-            
-            _rb.linearVelocity = Vector3.zero; // Resetar velocidade 3D
+           // 🚀 MUDANÇA: Resetar a escala 3D
+           Time.timeScale = 1f;
+           BashAbleObj.transform.localScale = new Vector3(1f, 1f, 1f); 
+           IsChosingDir = false;
+           // REMOVER: IsBashing = true;
 
-            // MUDANÇA CRÍTICA: Mapear a posição do rato 2D para o mundo 3D/2.5D
-            Vector3 mouseWorldPos = GetMouseWorldPosition();
-            
-            // 🚀 BashDir é a direção do PONTO DE LANÇAMENTO (BashAbleObj) para o MOUSE.
-            BashDir = mouseWorldPos - transform.position; // Se quiser lançar na direção do rato
-            BashDir.z = 0; // Garantir que o impulso está no plano XY
-            
-            transform.position = BashAbleObj.transform.position; // Mover jogador para o ponto de lançamento
+           _rb.linearVelocity = Vector3.zero; // Zera a velocidade para aplicar um impulso limpo
 
-            // Lógica de viragem (Turn): Baseada na direção X do Bash
-            if (BashDir.x > 0)
-            {
-                transform.eulerAngles = new Vector3(0, 0, 0);
-            }
-            else
-            {
-                transform.eulerAngles = new Vector3(0, 180, 0);
-            }
-            
-            BashDir = BashDir.normalized;
-            
-            // 🚀 MUDANÇA: Aplica a força no Rigidbody 3D do ALVO para o lançar.
-            // Assumimos que o BashableObj TAMBÉM tem um Rigidbody (3D) para ser lançado.
-            // Se o alvo não deve ser lançado, esta linha deve ser removida.
-            Rigidbody targetRb = BashAbleObj.GetComponent<Rigidbody>();
-            if (targetRb != null)
-            {
-                 targetRb.AddForce(-BashDir * 50f, ForceMode.Impulse); 
-            }
-           
-           
+           // MUDANÇA CRÍTICA: Mapear a posição do rato 2D para o mundo 3D/2.5D
+           Vector3 mouseWorldPos = GetMouseWorldPosition();
     
-            _rb.AddForce(BashDir * BashPower, ForceMode.VelocityChange); 
-          
-            Arrow.SetActive(false);
+           // 1. Determinar a DIREÇÃO DO JOGADOR
+           // BashDir aponta do alvo (BashAbleObj) para o mouse.
+           // A direção do jogador é a OPOSTA (-BashDir).
+           BashDir = mouseWorldPos - BashAbleObj.transform.position; // **CORREÇÃO: Usar posição do ALVO para o cálculo**
+           BashDir.z = 0; 
+    
+           // Move jogador para o ponto de lançamento
+           transform.position = BashAbleObj.transform.position; 
+    
+           // ... [Lógica de viragem (Turn) permanece igual]
+    
+           BashDir = BashDir.normalized;
+    
+           // 2. Lançar o ALVO
+           Rigidbody targetRb = BashAbleObj.GetComponent<Rigidbody>();
+           if (targetRb != null)
+           {
+              targetRb.AddForce(BashDir * 50f, ForceMode.Impulse); // Alvo é lançado na direção do rato
+           }
+   
+           // 3. Lançar o JOGADOR (Impulso Único)
+         
+           _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
+           _rb.AddForce(BashDir * BashPower, ForceMode.VelocityChange); 
+           VerticalVelocity = _rb.linearVelocity.y;
+    
+           // 4. ATIVAR CONTROLO DE QUEDA
+           justBashed = true;
+           bashFloatTimer = bashFloatTime;
+
+           Arrow.SetActive(false);
         }
     }
     else if (BashAbleObj != null)
@@ -251,22 +272,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    if (IsBashing)
-    {
-        if (BashTime > 0)
-        {
-            BashTime -= Time.deltaTime;
-          
-            _rb.linearVelocity = BashDir * BashPower*Time.deltaTime; // Aplica o impulso na direção
-        }
-        else
-        {
-            IsBashing = false;
-            BashTime = BashTimeReset;
-            _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, 0, 0); // Zera o Y e Z
-        }
-    }
+   
 }
+   
 
 // 🚀 FUNÇÃO AUXILIAR PARA MAPEAR O RATO EM 3D/2.5D
 private Vector3 GetMouseWorldPosition()
@@ -296,7 +304,7 @@ private Vector3 GetMouseWorldPosition()
 
       if (InputManager.jumpWasPressed)
       {
-         Debug.Log("salto pressionado");
+        
          jumpBufferTimer = MoveStats.jumpBufferTime;
          jumpReleasedDuringBuffer = false;
       }
@@ -371,6 +379,53 @@ private Vector3 GetMouseWorldPosition()
 
    private void Jump()
    {
+      if (justBashed)
+      {
+         // 1. Aplica a gravidade suave para criar o arco
+         VerticalVelocity += MoveStats.Gravity * bashGravityMultiplier * Time.fixedDeltaTime;
+    
+         bashFloatTimer -= Time.fixedDeltaTime;
+
+         // 2. CRÍTICO: Aplica a velocidade X/Y/Z no Rigidbody
+         // Mantém a velocidade horizontal que foi definida pelo impulso do Bash.
+         _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, VerticalVelocity, _rb.linearVelocity.z);
+    
+         // 3. Desliga a flag se o tempo acabar.
+         // **NÃO DESLIGAMOS A FLAG SE VerticalVelocity < 0** (isto faria o Bash terminar muito cedo).
+         if (bashFloatTimer <= 0)
+         {
+            justBashed = false;
+            _rb.useGravity = true; // Volta à gravidade normal
+         }
+    
+        
+         if (justBashed)
+         {
+            return; 
+         }
+      }
+      
+      if (isFloatingFromGrapple)
+      {
+        
+         VerticalVelocity += MoveStats.Gravity * bashGravityMultiplier * Time.fixedDeltaTime;
+    
+         
+         _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, VerticalVelocity, _rb.linearVelocity.z);
+
+         
+         if (isGrounded)
+         {
+            isFloatingFromGrapple = false;
+           
+         }
+    
+         if (isFloatingFromGrapple)
+         {
+            return; 
+         }
+      }
+      
       if (isJumping)
       {
          if (bumpedHead)
@@ -572,4 +627,18 @@ private Vector3 GetMouseWorldPosition()
       // Por isso, multiplicamos o halfExtents por 2.
       Gizmos.DrawWireCube(center, overlapHalfExtents * 2f);
    }
+   
+   
+   public void InitiateGrappleLaunch(float verticalImpulse)
+   {
+ 
+      VerticalVelocity = verticalImpulse; 
+      
+      isFloatingFromGrapple = true; 
+      
+      _rb.linearVelocity = new Vector3(0, _rb.linearVelocity.y, _rb.linearVelocity.z); 
+  
+   }
+   
+  
 }

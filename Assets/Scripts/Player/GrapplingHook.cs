@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,10 +11,14 @@ public class GrapplingHook : MonoBehaviour
     [SerializeField] private LineRenderer rope;
     [SerializeField] private KeyCode grappleKey = KeyCode.Space; 
     
-    [Header("Impulso Ori (Bash)")]
-    [SerializeField] private float bashForce = 50f; // Força do lançamento direcional
-    [SerializeField] private float bashMaxDistance = 1.5f; // Distância do pull inicial (opcional)
-    private bool isTargeting; // Novo estado para saber se está fixo e a apontar
+    [Header("Grapple Launch")]
+    [SerializeField] private float bashForce = 50f;
+  private bool isTargeting; 
+    [SerializeField] private float launchVerticalBoost = 1.2f;
+    
+  
+    private Vector3 currentLaunchDirection = Vector3.up; 
+    private bool drawGizmo = false;
     
     // Configurações do Spring Joint (para o balanço)
     [SerializeField] private float jointSpring = 4.5f;
@@ -21,8 +26,20 @@ public class GrapplingHook : MonoBehaviour
     [SerializeField] private float jointMassScale = 4.5f;
     [SerializeField] private float distanceReduction = 0.8f; // Puxa a distância para 80%
 
-    private Vector3 grapplePoint;
-    private SpringJoint joint; // 🚀 MUDANÇA 1: Componente 3D (SpringJoint)
+    public Vector3 grapplePoint;
+    private SpringJoint joint; 
+
+    
+    private PlayerMovement playerMovement;
+
+    private void Awake()
+    {
+        playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement == null)
+        {
+            Debug.LogError("PlayerMovement component not found on this object!");
+        }
+    }
 
     void Start()
     {
@@ -32,6 +49,8 @@ public class GrapplingHook : MonoBehaviour
             rope.enabled = false;
         }
     }
+    
+
 
     void Update()
     {
@@ -52,37 +71,52 @@ public class GrapplingHook : MonoBehaviour
         {
             rope.SetPosition(1, transform.position);
         }
+        
+        if (isTargeting)
+        {
+            // Calcular a direção de lançamento potencial
+            Vector3 horizontalDirection = transform.right; 
+            Vector3 launchDirection = horizontalDirection + (Vector3.up * launchVerticalBoost);
+        
+            // Armazenamos a direção normalizada (já que a força está congelada)
+            currentLaunchDirection = launchDirection.normalized; 
+        }
     }
 
     //---------------------------------------------------------
 
     private void StopGrapple()
     {
-        // Apenas se o gancho estava ativo (fixo ou a apontar)
+     
         if (joint != null)
         {
-            // 1. APLICAR O IMPULSO (BASH) - SOMENTE SE ESTAVA NO ESTADO DE APONTAR
+           
             if (isTargeting)
             {
                 Rigidbody rb = GetComponent<Rigidbody>();
                 if (rb != null)
                 {
-                    // Vetor do PONTO DE FIXAÇÃO para o JOGADOR
-                    Vector3 launchDirection = (transform.position - grapplePoint).normalized;
+                   
+                    Vector3 horizontalDirection = transform.right; 
+        
+                    
+                    Vector3 launchDirection = horizontalDirection + (Vector3.up * launchVerticalBoost);
+
+                    
+                    launchDirection = launchDirection.normalized; 
+
+                    
                 
-                    // O Impulso é na DIREÇÃO OPOSTA ao ponto fixo.
-                    // Usamos o Vector3.up como um vetor base para garantir o impulso para fora.
-                
-                    // Aplicar força. Use Vector3.up como o vetor para o 'Ori Bash'
-                    // O Impulso do Ori é sempre na direção OPOSTA ao ponto de ancoragem,
-                    // para impulsionar o jogador para longe.
-                
-                    rb.linearVelocity = Vector3.zero; // Resetar a velocidade antes do impulso
-                    rb.AddForce(launchDirection * bashForce, ForceMode.VelocityChange); // 🚀 APLICAR FORÇA MÁXIMA
+
+              
+                    rb.AddForce(launchDirection * bashForce, ForceMode.VelocityChange); 
+              
+                    
+                    playerMovement.InitiateGrappleLaunch(rb.linearVelocity.y);
                 }
             }
         
-            // 2. Limpeza
+     
             Destroy(joint);
         }
     
@@ -95,11 +129,10 @@ public class GrapplingHook : MonoBehaviour
 
   private void FindAndStartGrapple()
 {
-    // 1. Verificar se já existe um joint ativo.
+ 
     if (joint != null) return;
     
-    // 2. Procurar alvos Grappable na esfera de alcance.
-    // Usamos OverlapSphere para detetar todos os coliders 3D na área.
+
     Collider[] targets = Physics.OverlapSphere(
         transform.position, 
         grappleRange, 
@@ -133,28 +166,33 @@ public class GrapplingHook : MonoBehaviour
     
     grapplePoint = closestTargetPoint;
     
-    // 4. Congelar a Velocidade (Importante para a sensação de Ori Bash)
+    
     Rigidbody rb = GetComponent<Rigidbody>();
     if (rb != null)
     {
+    
         rb.linearVelocity = Vector3.zero; // Congela o movimento no ar
         rb.angularVelocity = Vector3.zero;
     }
     
-    // 5. Adicionar e configurar o SpringJoint (Para fixar o jogador)
+
     joint = gameObject.AddComponent<SpringJoint>();
     joint.autoConfigureConnectedAnchor = false;
     joint.connectedAnchor = grapplePoint; 
+    float initialDistance = closestDistance;
+
+
+    joint.minDistance = initialDistance * distanceReduction; 
     
-    // Mola muito rígida para fixar o jogador quase instantaneamente no ponto
-    joint.maxDistance = closestDistance; 
-    joint.minDistance = closestDistance; 
-    joint.spring = 1000f; 
-    joint.damper = 10f; 
-    joint.massScale = 1f;
+
+    joint.maxDistance = initialDistance * 1.1f; 
+    joint.spring = jointSpring; 
+    joint.damper = jointDamper; 
+    joint.massScale = jointMassScale;
     
     // 6. Entrar no estado de Apontar/Pausa
-    isTargeting = true; 
+    isTargeting = true;
+ 
     
     // 7. Configurar a LineRenderer
     if (rope != null)
@@ -163,5 +201,37 @@ public class GrapplingHook : MonoBehaviour
         rope.SetPosition(1, transform.position);
         rope.enabled = true;
     }
+    
+    
+    
 }
+  
+    private void OnDrawGizmos()
+    {
+        // Desenha SÓ SE estiver em modo de apontar (tempo está parado)
+        if (!Application.isPlaying || !isTargeting) 
+            return;
+
+        // Define a cor do Gizmo (vermelho)
+        Gizmos.color = Color.red;
+
+        Vector3 startPoint = transform.position;
+        
+        // O comprimento do Gizmo deve ser ajustável ou usar o BashPower
+        // Usamos o BashPower para ter a magnitude real da força que será aplicada.
+        Vector3 endPoint = startPoint + (currentLaunchDirection * (bashForce / 15f)); // Dividir por 15f para escala visual
+        
+        // Desenha o vetor do impulso
+        Gizmos.DrawLine(startPoint, endPoint);
+
+        // Desenha uma esfera onde o lançamento vai terminar
+        Gizmos.DrawWireSphere(endPoint, 0.1f);
+        
+        // Desenha uma linha para o grapple point (para contexto)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, grapplePoint);
+        Gizmos.DrawSphere(grapplePoint, 0.1f);
+    }
+  
+  
 }
