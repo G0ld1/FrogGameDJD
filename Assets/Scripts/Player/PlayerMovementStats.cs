@@ -15,10 +15,13 @@ public class PlayerMovementStats : ScriptableObject
     [Range(1f, 100f)] public float maxRunSpeed = 20f;
     
     [Header("Grappling Hook")]
-    [Range(10f, 50f)] public float grappleMaxDistance = 20f;
-    [Range(10f, 50f)] public float launchForce = 35f;       // Força do impulso
-    public LayerMask grappleLayer;   
-    [Range(5f, 90f)] public float grappleAngleTolerance = 45f;
+    
+    [Range(10f, 50f)] public float launchForce = 35f;       
+    public LayerMask grappleLayer;  
+    
+    [Header("Bash")]
+    public LayerMask bashLayer;
+    
     
     [Header("Grounded/Collision Checks")]
     public LayerMask groundLayer;

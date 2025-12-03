@@ -18,12 +18,13 @@ MonoBehaviour:
   AirAcceleration: 20
   AirDeceleration: 10
   maxRunSpeed: 25
-  grappleMaxDistance: 50
-  launchForce: 35
+  launchForce: 39.8
   grappleLayer:
     serializedVersion: 2
     m_Bits: 128
-  grappleAngleTolerance: 45
+  bashLayer:
+    serializedVersion: 2
+    m_Bits: 256
   groundLayer:
     serializedVersion: 2
     m_Bits: 64

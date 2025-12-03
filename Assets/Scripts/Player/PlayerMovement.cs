@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
    private bool IsChosingDir;
    private bool IsBashing;
    [SerializeField] private float BashPower;
-   [SerializeField] private float BashTime;
+
    [SerializeField] private GameObject Arrow;
    private ArrowMovement _arrowMovement;
    Vector3 BashDir;
@@ -67,11 +67,12 @@ public class PlayerMovement : MonoBehaviour
    
    //coyote time vars
    private float coyoteTimer;
-   
+
+   public GrapplingHook grapplingHook;
 
    private void Awake()
    {
-      
+      grapplingHook = GetComponent<GrapplingHook>();
 
       _isFacingRight = true;
       
@@ -95,18 +96,20 @@ public class PlayerMovement : MonoBehaviour
    {
       CollisionChecks();
       
-
-      if (IsChosingDir)
-         return;
+      if (IsChosingDir ) 
+         return; 
+    
       
-      Jump();
-      
-      
-         
-      if (isFloatingFromGrapple)
+      if (grapplingHook != null && grapplingHook.isGrapplingActive)
       {
+         ApplyGrapplePropulsion();
+       
+         
          return; 
       }
+    
+      
+      Jump();
          
          if (!justBashed)
          {
@@ -123,6 +126,7 @@ public class PlayerMovement : MonoBehaviour
          }
          
    }
+   
 
    #region Movement
 
@@ -179,91 +183,82 @@ public class PlayerMovement : MonoBehaviour
 
    void Bash()
 {
-    // Variáveis auxiliares (assumindo que 'Raduis' é definido noutro lugar)
+   
     float bashRadius = Raduis; 
     
-    // 1. Deteção de Alvos (Physics2D.CircleCastAll -> Physics.SphereCastAll/OverlapSphere)
-    // Usamos OverlapSphere para encontrar todos os alvos num raio.
-    // Usar SphereCastAll é desnecessariamente complexo para esta deteção.
-    Collider[] targets = Physics.OverlapSphere(transform.position, bashRadius, MoveStats.grappleLayer); // Use sua LayerMask aqui
+   
+    Collider[] targets = Physics.OverlapSphere(transform.position, bashRadius, MoveStats.bashLayer); 
 
-    // Resetar o estado de deteção
+
     NearToBashAbleObj = false;
     
-    // 2. Iterar sobre os alvos
     foreach (Collider target in targets)
     {
-        // Certifique-se de que o alvo tem o Tag correto e não é o próprio jogador.
+       
         if (target.CompareTag("BashAble")) 
         {
             NearToBashAbleObj = true;
             BashAbleObj = target.gameObject;
-            break; // Encontrou o alvo mais próximo (se o OverlapSphere for pequeno)
+            Debug.Log("Estas perto do objeto bashable");
+            break; 
         }
     }
 
     // 3. Lógica de Apontar e Carregar
     if (NearToBashAbleObj)
     {
-        // 🚀 MUDANÇA: Usar MeshRenderer ou o componente de renderização 3D do alvo
+    
         BashAbleObj.GetComponent<Renderer>().material.color = Color.yellow; 
         
-        // Ativar o carregamento
+      
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             Time.timeScale = 0;
-            // 🚀 MUDANÇA: Escala 3D
+    
             BashAbleObj.transform.localScale = new Vector3(1.4f, 1.4f, 1.4f); 
            Arrow.SetActive(true);
           _arrowMovement.Initialize(BashAbleObj.transform);
             IsChosingDir = true;
         }
         
-        // Lançamento do Bash
+    
         else if (IsChosingDir && Input.GetKeyUp(KeyCode.Mouse1))
         {
-           // 🚀 MUDANÇA: Resetar a escala 3D
            Time.timeScale = 1f;
            BashAbleObj.transform.localScale = new Vector3(1f, 1f, 1f); 
            IsChosingDir = false;
-           // REMOVER: IsBashing = true;
+           Arrow.SetActive(false);
 
-           _rb.linearVelocity = Vector3.zero; // Zera a velocidade para aplicar um impulso limpo
-
-           // MUDANÇA CRÍTICA: Mapear a posição do rato 2D para o mundo 3D/2.5D
            Vector3 mouseWorldPos = GetMouseWorldPosition();
-    
-           // 1. Determinar a DIREÇÃO DO JOGADOR
-           // BashDir aponta do alvo (BashAbleObj) para o mouse.
-           // A direção do jogador é a OPOSTA (-BashDir).
-           BashDir = mouseWorldPos - BashAbleObj.transform.position; // **CORREÇÃO: Usar posição do ALVO para o cálculo**
+           BashDir = mouseWorldPos - BashAbleObj.transform.position;
            BashDir.z = 0; 
-    
-           // Move jogador para o ponto de lançamento
+           BashDir = BashDir.normalized;
+
            transform.position = BashAbleObj.transform.position; 
     
-           // ... [Lógica de viragem (Turn) permanece igual]
-    
-           BashDir = BashDir.normalized;
-    
-           // 2. Lançar o ALVO
            Rigidbody targetRb = BashAbleObj.GetComponent<Rigidbody>();
            if (targetRb != null)
            {
-              targetRb.AddForce(BashDir * 50f, ForceMode.Impulse); // Alvo é lançado na direção do rato
+              targetRb.AddForce(BashDir * 50f, ForceMode.Impulse); 
            }
-   
-           // 3. Lançar o JOGADOR (Impulso Único)
+
          
-           _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
-           _rb.AddForce(BashDir * BashPower, ForceMode.VelocityChange); 
-           VerticalVelocity = _rb.linearVelocity.y;
+          
+           Vector3 playerLaunchDir = -BashDir; 
     
-           // 4. ATIVAR CONTROLO DE QUEDA
+         
+           float targetLaunchSpeed = BashPower; 
+    
+       
+           _rb.linearVelocity = playerLaunchDir * targetLaunchSpeed; 
+
+        
+           _rb.useGravity = false; 
            justBashed = true;
            bashFloatTimer = bashFloatTime;
 
-           Arrow.SetActive(false);
+       
+           VerticalVelocity = _rb.linearVelocity.y; 
         }
     }
     else if (BashAbleObj != null)
@@ -276,20 +271,19 @@ public class PlayerMovement : MonoBehaviour
 }
    
 
-// 🚀 FUNÇÃO AUXILIAR PARA MAPEAR O RATO EM 3D/2.5D
+
 private Vector3 GetMouseWorldPosition()
 {
-    // Cria um raio da posição do mouse no ecrã
+
     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
     
-    // Define um plano para intersecção (o plano do jogo, geralmente XY)
-    // Assumimos que a profundidade do jogo é no Z=0
+   
     Plane gamePlane = new Plane(Vector3.forward, Vector3.zero); 
 
     if (gamePlane.Raycast(ray, out float distance))
     {
         Vector3 worldPosition = ray.GetPoint(distance);
-        worldPosition.z = 0; // Garante que a posição está no plano do jogo (2.5D)
+        worldPosition.z = 0;
         return worldPosition;
     }
     return Vector3.zero;
@@ -381,21 +375,20 @@ private Vector3 GetMouseWorldPosition()
    {
       if (justBashed)
       {
-         // 1. Aplica a gravidade suave para criar o arco
+        
          VerticalVelocity += MoveStats.Gravity * bashGravityMultiplier * Time.fixedDeltaTime;
     
          bashFloatTimer -= Time.fixedDeltaTime;
 
-         // 2. CRÍTICO: Aplica a velocidade X/Y/Z no Rigidbody
-         // Mantém a velocidade horizontal que foi definida pelo impulso do Bash.
+  
          _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, VerticalVelocity, _rb.linearVelocity.z);
     
-         // 3. Desliga a flag se o tempo acabar.
-         // **NÃO DESLIGAMOS A FLAG SE VerticalVelocity < 0** (isto faria o Bash terminar muito cedo).
+       
          if (bashFloatTimer <= 0)
          {
             justBashed = false;
-            _rb.useGravity = true; // Volta à gravidade normal
+            _rb.useGravity = true; 
+            
          }
     
         
@@ -518,7 +511,7 @@ private Vector3 GetMouseWorldPosition()
    private void IsGrounded()
    {
       Vector3 boxCastOrigin = new Vector3(_feetColl.bounds.center.x,_feetColl.bounds.min.y,0);
-     // Vector3 boxCastSize = new Vector3(_feetColl.bounds.size.x,MoveStats.groundDetectionRayLength,0);
+   
 
       Vector3 halfExtents = _feetColl.size/2f;
       
@@ -538,7 +531,7 @@ private Vector3 GetMouseWorldPosition()
          center, 
          overlapHalfExtents, 
          Quaternion.identity, 
-         MoveStats.groundLayer // O LayerMask
+         MoveStats.groundLayer 
       );
       
       isGrounded = (hits.Length > 0);
@@ -583,17 +576,15 @@ private Vector3 GetMouseWorldPosition()
    
    private void OnDrawGizmos()
    {
-      // Apenas desenha se o script estiver a funcionar (opcional, mas bom)
+     
       if (!Application.isPlaying) 
          return; 
     
-      // Obtemos o collider dos pés, tal como fazemos no IsGrounded()
+
       if (_feetColl == null) return;
       BoxCollider feetBox = (BoxCollider)_feetColl;
 
-      // --- CÁLCULOS EXATOS DO OVERLAPBOX (REPETIMOS A LÓGICA DO ISGROUNDED) ---
 
-      // 1. Half Extents
       Vector3 halfExtents = feetBox.size / 2f; 
       float checkHeight = (feetBox.size.y / 2f) + MoveStats.groundDetectionRayLength;
     
@@ -603,31 +594,32 @@ private Vector3 GetMouseWorldPosition()
          halfExtents.z     
       );
 
-      // Se o Z for zero, aumentamos ligeiramente para visualizar no 3D
       if (overlapHalfExtents.z == 0) overlapHalfExtents.z = 0.05f; 
 
-      // 2. Centro da Caixa
       Vector3 center = feetBox.bounds.center;
       center.y -= MoveStats.groundDetectionRayLength+0.05f;
 
-      // --- DESENHAR O GIZMO ---
 
-      // Cor: Vermelho se não houver colisão (isGrounded == false) e Verde se houver.
       if (isGrounded)
       {
-         Gizmos.color = new Color(0f, 1f, 0f, 0.5f); // Verde (transparente)
+         Gizmos.color = new Color(0f, 1f, 0f, 0.5f); 
       }
       else
       {
-         Gizmos.color = new Color(1f, 0f, 0f, 0.5f); // Vermelho (transparente)
+         Gizmos.color = new Color(1f, 0f, 0f, 0.5f); 
       }
 
-      // Desenha o cubo na posição e com o tamanho definido pelo OverlapBox.
-      // O Gizmos.DrawWireCube espera o tamanho total, não o halfExtents.
-      // Por isso, multiplicamos o halfExtents por 2.
       Gizmos.DrawWireCube(center, overlapHalfExtents * 2f);
    }
    
+   private void ApplyGrapplePropulsion()
+   {
+
+ 
+      _rb.AddForce(Vector3.up * MoveStats.Gravity, ForceMode.Acceleration);
+    
+     
+   }
    
    public void InitiateGrappleLaunch(float verticalImpulse)
    {
