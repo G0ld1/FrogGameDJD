@@ -200,20 +200,29 @@ public class CameraFollow : MonoBehaviour
                 }
 
     }
-
+    
+    public void ResetCameraState()
+    {
+        _velocity = Vector3.zero; 
+        _freeLookVelocity = Vector3.zero; 
+    
+        _currentFreeLookOffset = Vector3.zero;
+        _currentFallOffset = 0f;
+    
+        Vector3 targetPos = target.position + staticOffset; 
+    
+        transform.position = targetPos;
+        currentCameraPosition = targetPos; 
+    }
 
 
     private void CalculateDeadZoneFollow(Vector3 effectiveTargetPosition)
     {
         currentCameraPosition = transform.position;
         
-        // 1. Calcular a Posição Alvo Desejada no X (Usando a direção com DELAY)
-        // O look-ahead só muda quando o currentFacingDirection for atualizado em HandleDirectionDelay()
-        // Usamos effectiveTargetPosition.x para a base
+  
         float desiredXTarget = effectiveTargetPosition.x + (lookAheadOffset * currentFacingDirection);
-        float desiredYTarget = effectiveTargetPosition.y + staticOffset.y; // Y base é effectiveTargetPosition.y
-
-        // --- Lógica da Zona Morta (Dead Zone) ---
+        float desiredYTarget = effectiveTargetPosition.y + staticOffset.y; 
 
         Vector3 deadZoneCenter = new Vector3(currentCameraPosition.x, currentCameraPosition.y, 0);
 
