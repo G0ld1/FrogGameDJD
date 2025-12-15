@@ -8,10 +8,14 @@ public class PlayerManager : MonoBehaviour
     private Rigidbody rb;
     
     private CameraFollow cameraScript;
+    
+    private PlayerMovement playerScript;
+    private bool isDeadOrRespawning = false;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         currentSpawnPoint = transform.position;
+        playerScript = GetComponent<PlayerMovement>();
         cameraScript = FindFirstObjectByType<CameraFollow>();
     }
 
@@ -23,7 +27,11 @@ public class PlayerManager : MonoBehaviour
 
     public void Die()
     {
+        if (isDeadOrRespawning) return; 
 
+        isDeadOrRespawning = true;
+        
+        rb.isKinematic = true;
 
         Debug.Log("Morreu! A tentar respawn...");
         Invoke("Respawn", 1f); 
@@ -31,15 +39,24 @@ public class PlayerManager : MonoBehaviour
 
     private void Respawn()
     {
-        transform.position = currentSpawnPoint;
-        
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
         
         if (cameraScript != null)
         {
             cameraScript.ResetCameraState();
         }
+        
+        if (playerScript != null)
+        {
+            playerScript.ResetStateForRespawn();
+        }
+        transform.position = currentSpawnPoint;
+        
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        
+        rb.isKinematic = false;
+        isDeadOrRespawning = false;
+       
     }
     
     public void WinGame()
