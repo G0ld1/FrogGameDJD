@@ -22,7 +22,9 @@ public class EnemyFormSwitcher : MonoBehaviour
     {
         if (player == null) return;
 
-        float dist = Vector3.Distance(transform.position, player.position);
+        Vector2 enemyPos = new Vector2(transform.position.x, transform.position.y);
+        Vector2 playerPos = new Vector2(player.position.x, player.position.y);
+        float dist = Vector2.Distance(enemyPos, playerPos);
 
         if (dist <= switchRange && !isAlert)
         {
