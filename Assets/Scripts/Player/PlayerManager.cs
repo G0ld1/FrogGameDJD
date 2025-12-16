@@ -34,7 +34,17 @@ public class PlayerManager : MonoBehaviour
         rb.isKinematic = true;
 
         Debug.Log("Morreu! A tentar respawn...");
-        Invoke("Respawn", 1f); 
+        
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.PlayerLostLife();
+        }
+        
+        if (GameManager.Instance != null && GameManager.Instance.currentLives > 0) 
+        {
+            Invoke("Respawn", 1f); 
+        }
+      
     }
 
     private void Respawn()
