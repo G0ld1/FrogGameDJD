@@ -4547,6 +4547,7 @@ GameObject:
   - component: {fileID: 561428264}
   - component: {fileID: 561428263}
   - component: {fileID: 561428268}
+  - component: {fileID: 561428269}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -4697,6 +4698,21 @@ MonoBehaviour:
   launchVerticalBoost: 9
   isGrapplingActive: 0
   grapplePoint: {x: 0, y: 0, z: 0}
+--- !u!114 &561428269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561428262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3910a42d70d655343b0c097083155e02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  knockbackForce: 2
+  upwardForce: 3
+  lockTime: 0.15
 --- !u!1 &602726592
 GameObject:
   m_ObjectHideFlags: 0
@@ -14230,6 +14246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyFormSwitcher
   switchRange: 5
+  knockbackRange: 6
   normalForm: {fileID: 197977959}
   alertForm: {fileID: 1688145407}
   flashCanvas: {fileID: 110349770}

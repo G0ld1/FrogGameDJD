@@ -92,45 +92,56 @@ public class PlayerMovement : MonoBehaviour
 
    }
 
-   private void FixedUpdate()
-   {
-      CollisionChecks();
-      
-      if (IsChosingDir ) 
-         return; 
-    
-      
-      if (grapplingHook != null && grapplingHook.isGrapplingActive)
-      {
-         ApplyGrapplePropulsion();
-       
-         
-         return; 
-      }
-    
-      
-      Jump();
-         
-         if (!justBashed)
-         {
-            _rb.linearVelocity = new Vector2(Dir * Time.deltaTime, _rb.linearVelocity.y);
-             
+    private void FixedUpdate()
+    {
+        PlayerKnockback knock = GetComponent<PlayerKnockback>();
+        if (knock != null && knock.IsKnocked())
+            return;
+
+        CollisionChecks();
+
+        if (IsChosingDir)
+            return;
+
+        if (grapplingHook != null && grapplingHook.isGrapplingActive)
+        {
+            ApplyGrapplePropulsion();
+            return;
+        }
+
+        Jump();
+
+        if (!justBashed)
+        {
+            _rb.linearVelocity = new Vector2(
+                Dir * Time.deltaTime,
+                _rb.linearVelocity.y
+            );
+
             if (isGrounded)
             {
-               Move(MoveStats.groundAcceleration, MoveStats.groundDeceleration,InputManager.movement);
+                Move(
+                    MoveStats.groundAcceleration,
+                    MoveStats.groundDeceleration,
+                    InputManager.movement
+                );
             }
             else
             {
-               Move(MoveStats.AirAcceleration, MoveStats.AirDeceleration,InputManager.movement);
+                Move(
+                    MoveStats.AirAcceleration,
+                    MoveStats.AirDeceleration,
+                    InputManager.movement
+                );
             }
-         }
-         
-   }
-   
+        }
+    }
 
-   #region Movement
 
-   private void Move(float acceleration, float decceleration, Vector3 moveInput)
+
+    #region Movement
+
+    private void Move(float acceleration, float decceleration, Vector3 moveInput)
    {
       if (moveInput != Vector3.zero)
       {

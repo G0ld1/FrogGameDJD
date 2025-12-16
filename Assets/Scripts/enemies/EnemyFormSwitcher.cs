@@ -4,6 +4,8 @@ using System.Collections;
 public class EnemyFormSwitcher : MonoBehaviour
 {
     public float switchRange = 5f;
+    public float knockbackRange = 6f;
+
 
     public GameObject normalForm;
     public GameObject alertForm;
@@ -51,6 +53,14 @@ public class EnemyFormSwitcher : MonoBehaviour
 
         if (flashCanvas != null)
             StartCoroutine(Flashbang());
+
+        PlayerKnockback knockback = player.GetComponent<PlayerKnockback>();
+
+        if (knockback != null)
+        {
+            knockback.ApplyKnockback(transform.position);
+        }
+
 
         Debug.Log("ALERT MODE ON (LOCKED)");
     }
