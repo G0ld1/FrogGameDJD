@@ -12,9 +12,6 @@ public class PlayerMovement : MonoBehaviour
 
    private Rigidbody _rb;
    
-   [Header("Animation")] 
-   public Animator playerAnimator;
-   
    //movement vars
    private Vector3 moveVelocity;
    private bool _isFacingRight;
@@ -128,46 +125,6 @@ public class PlayerMovement : MonoBehaviour
             }
          }
          
-         AnimateMovement();
-         
-   }
-   
-   private void AnimateMovement()
-   {
-      if (playerAnimator == null) return;
-
-      float currentSpeed = Mathf.Abs(_rb.linearVelocity.x);
-    
-      float maxSpeed = MoveStats.maxRunSpeed;
-
-   
-      float normalizedSpeed = currentSpeed / maxSpeed;
-
-      playerAnimator.SetFloat("Speed", normalizedSpeed);
-   }
-   
-   public void ResetStateForRespawn()
-   {
-      // Zera o estado Vertical
-      VerticalVelocity = 0f; 
-      isJumping = false;
-      isFalling = false;
-      isFastFalling = false;
-      numberofJumpsUsed = 0;
-
-      // Zera o estado de buffs/debuffs
-      justBashed = false;
-      isFloatingFromGrapple = false;
-      IsChosingDir = false; 
-
-      // Zera as velocidades internas (horizontal)
-      moveVelocity = Vector3.zero;
-      Dir = 0f; 
-    
-      // Zera os timers
-      jumpBufferTimer = 0f;
-      coyoteTimer = 0f;
-      
    }
    
 
