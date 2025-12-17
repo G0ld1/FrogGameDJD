@@ -8,15 +8,18 @@ public class PatrolMovement : MonoBehaviour, IMovementBehavior
     private Rigidbody rb;
     private Vector3 startPos;
     private bool movingRight = true;
+    public Animator pedra_animator;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
+        pedra_animator = GetComponent<Animator>();
     }
 
     public void Move(Transform enemy)
     {
+        pedra_animator.SetBool("Andar", true);
         float offset = enemy.position.x - startPos.x;
 
         // mudou de direção ao atingir a distância limite
