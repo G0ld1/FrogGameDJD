@@ -12,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
 
    private Rigidbody _rb;
    
+   [Header("Animation")] 
+   public Animator playerAnimator;
+   
    //movement vars
    private Vector3 moveVelocity;
    private bool _isFacingRight;
@@ -92,56 +95,85 @@ public class PlayerMovement : MonoBehaviour
 
    }
 
-    private void FixedUpdate()
-    {
-        PlayerKnockback knock = GetComponent<PlayerKnockback>();
-        if (knock != null && knock.IsKnocked())
-            return;
-
-        CollisionChecks();
-
-        if (IsChosingDir)
-            return;
-
-        if (grapplingHook != null && grapplingHook.isGrapplingActive)
-        {
-            ApplyGrapplePropulsion();
-            return;
-        }
-
-        Jump();
-
-        if (!justBashed)
-        {
-            _rb.linearVelocity = new Vector2(
-                Dir * Time.deltaTime,
-                _rb.linearVelocity.y
-            );
-
+   private void FixedUpdate()
+   {
+      CollisionChecks();
+      
+      if (IsChosingDir ) 
+         return; 
+    
+      
+      if (grapplingHook != null && grapplingHook.isGrapplingActive)
+      {
+         ApplyGrapplePropulsion();
+       
+         
+         return; 
+      }
+    
+      
+      Jump();
+         
+         if (!justBashed)
+         {
+            _rb.linearVelocity = new Vector2(Dir * Time.deltaTime, _rb.linearVelocity.y);
+             
             if (isGrounded)
             {
-                Move(
-                    MoveStats.groundAcceleration,
-                    MoveStats.groundDeceleration,
-                    InputManager.movement
-                );
+               Move(MoveStats.groundAcceleration, MoveStats.groundDeceleration,InputManager.movement);
             }
             else
             {
-                Move(
-                    MoveStats.AirAcceleration,
-                    MoveStats.AirDeceleration,
-                    InputManager.movement
-                );
+               Move(MoveStats.AirAcceleration, MoveStats.AirDeceleration,InputManager.movement);
             }
-        }
-    }
+         }
+         
+         AnimateMovement();
+         
+   }
+   
+   private void AnimateMovement()
+   {
+      if (playerAnimator == null) return;
 
+      float currentSpeed = Mathf.Abs(_rb.linearVelocity.x);
+    
+      float maxSpeed = MoveStats.maxRunSpeed;
 
+   
+      float normalizedSpeed = currentSpeed / maxSpeed;
 
-    #region Movement
+      playerAnimator.SetFloat("Speed", normalizedSpeed);
+   }
+   
+   public void ResetStateForRespawn()
+   {
+      // Zera o estado Vertical
+      VerticalVelocity = 0f; 
+      isJumping = false;
+      isFalling = false;
+      isFastFalling = false;
+      numberofJumpsUsed = 0;
 
-    private void Move(float acceleration, float decceleration, Vector3 moveInput)
+      // Zera o estado de buffs/debuffs
+      justBashed = false;
+      isFloatingFromGrapple = false;
+      IsChosingDir = false; 
+
+      // Zera as velocidades internas (horizontal)
+      moveVelocity = Vector3.zero;
+      Dir = 0f; 
+    
+      // Zera os timers
+      jumpBufferTimer = 0f;
+      coyoteTimer = 0f;
+      
+   }
+   
+
+   #region Movement
+
+   private void Move(float acceleration, float decceleration, Vector3 moveInput)
    {
       if (moveInput != Vector3.zero)
       {

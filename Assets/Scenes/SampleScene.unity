@@ -5754,32 +5754,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 759582380}
   m_CullTransparentMesh: 1
---- !u!1 &765417165 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3459032220218742511, guid: e8a27bede668b02448419921856c3654, type: 3}
-  m_PrefabInstance: {fileID: 3127402046922501649}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &765417166 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6711453178788034312, guid: e8a27bede668b02448419921856c3654, type: 3}
-  m_PrefabInstance: {fileID: 3127402046922501649}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &797678044
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: -2204742740042594320, guid: 573b3f897aeda1142ac6a301d54e47de, type: 3}
-  m_PrefabInstance: {fileID: 1112716786}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 698333671}
-  m_Layer: 0
-  m_Name: RootNode
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &698333671
 Transform:
   m_ObjectHideFlags: 0
