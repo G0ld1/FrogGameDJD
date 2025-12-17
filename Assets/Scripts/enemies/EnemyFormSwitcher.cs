@@ -14,6 +14,7 @@ public class EnemyFormSwitcher : MonoBehaviour
     public CanvasGroup flashCanvas; // Canvas branco fullscreen
     public float flashDuration = 10f;
 
+    public GameManager gameManager;
     private Transform player;
     private bool isAlert = false;
     private bool hasBeenAlerted = false; // nunca mais volta ao A
@@ -40,6 +41,7 @@ public class EnemyFormSwitcher : MonoBehaviour
         if (dist <= switchRange && !isAlert)
         {
             ActivateAlertMode();
+            gameManager.PlayerLostLife();
         }
     }
 
@@ -78,6 +80,8 @@ public class EnemyFormSwitcher : MonoBehaviour
             yield return null;
         }
 
+        Debug.Log("Devia ter flashado");
+
         flashCanvas.alpha = 1f;
 
         yield return new WaitForSeconds(0.4f);
@@ -91,6 +95,7 @@ public class EnemyFormSwitcher : MonoBehaviour
             flashCanvas.alpha = Mathf.Lerp(1f, 0f, t / fadeOutTime);
             yield return null;
         }
+        Debug.Log("Devia ter desflashado");
 
         flashCanvas.alpha = 0f;
     }
