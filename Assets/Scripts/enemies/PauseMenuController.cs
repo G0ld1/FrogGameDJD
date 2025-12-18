@@ -45,13 +45,18 @@ public class PauseMenuController : MonoBehaviour
     {
         Debug.Log("Carregando Menu Principal..."); // Log de depuração
         Time.timeScale = 1f;           // Garante que o tempo volta ao normal
-        SceneManager.LoadScene("MainMenu"); // Carrega a cena do Menu Principal
+        SceneManager.LoadScene("DemoScene"); // Carrega a cena do Menu Principal
     }
 
     // Função chamada para sair do jogo
     public void QuitGame()
     {
-        Debug.Log("Saindo do Jogo..."); // Log de depuração
-        Application.Quit();            // Fecha o jogo
+        // Se o jogo estiver sendo executado no Editor, para a execução
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #else
+                    // Fecha o jogo
+                    Application.Quit();
+        #endif
     }
 }
