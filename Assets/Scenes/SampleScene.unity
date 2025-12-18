@@ -1891,6 +1891,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3508261373351386856, guid: be0f372f6c653ac4aa6d65b8a5abeeb4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 21.903263
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508261373351386856, guid: be0f372f6c653ac4aa6d65b8a5abeeb4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 8.9135
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508261373351386856, guid: be0f372f6c653ac4aa6d65b8a5abeeb4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 87.60584
+      objectReference: {fileID: 0}
     - target: {fileID: 8145523911981193016, guid: be0f372f6c653ac4aa6d65b8a5abeeb4, type: 3}
       propertyPath: pedra_animator
       value: 
@@ -5513,7 +5525,7 @@ GameObject:
   - component: {fileID: 616518104}
   - component: {fileID: 616518103}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: 'FInal item '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5766,37 +5778,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675289248}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &680596910
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 680596911}
-  m_Layer: 5
-  m_Name: Heart1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &680596911
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 680596910}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &814317833
 Mesh:
   m_ObjectHideFlags: 0
@@ -17050,11 +17031,11 @@ PrefabInstance:
       objectReference: {fileID: 79079752}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14.9
+      value: 129.85
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.3
+      value: 50.4
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17117,7 +17098,6 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 680596911}
   - {fileID: 110349774}
   - {fileID: 3684240195569156943}
   - {fileID: 410087041}
