@@ -38,7 +38,12 @@ public class PlayerManager : MonoBehaviour
         {
             GameManager.Instance.PlayerLostLife();
         }
-        
+        //
+        // SfxManager.instance.PlaySFX(
+        //     SfxManager.instance.damage,
+        //     0.6f
+        // );
+        //
         rb.isKinematic = true;
 
         Debug.Log("Morreu! A tentar respawn...");

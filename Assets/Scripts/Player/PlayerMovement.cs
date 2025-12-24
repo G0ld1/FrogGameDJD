@@ -15,6 +15,9 @@ public class PlayerMovement : MonoBehaviour
    [Header("Animation")] 
    public Animator playerAnimator;
    
+   [Header("Audio")]
+   [SerializeField] private AudioSource footstepSource;
+   
    //movement vars
    private Vector3 moveVelocity;
    private bool _isFacingRight;
@@ -124,6 +127,26 @@ public class PlayerMovement : MonoBehaviour
 
       Dir = Input.GetAxis("Horizontal") * MoveStats.maxRunSpeed;
    }
+   
+   private void HandleFootsteps()
+   {
+      bool isMoving =
+         isGrounded &&
+         Mathf.Abs(_rb.linearVelocity.x) > 0.1f &&
+         !IsChosingDir &&
+         !justBashed;
+
+      if (isMoving)
+      {
+         if (!footstepSource.isPlaying)
+            footstepSource.Play();
+      }
+      else
+      {
+         if (footstepSource.isPlaying)
+            footstepSource.Stop();
+      }
+   }
 
    private void FixedUpdate()
    {
@@ -159,6 +182,7 @@ public class PlayerMovement : MonoBehaviour
          }
          
          AnimateMovement();
+        // HandleFootsteps();
          
    }
    
@@ -300,7 +324,12 @@ public class PlayerMovement : MonoBehaviour
         else if (IsChosingDir && Input.GetKeyUp(KeyCode.Mouse1))
         {
            Time.timeScale = 1f;
-          
+           
+           // SfxManager.instance.PlaySFX(
+           //    SfxManager.instance.bash,
+           //    0.2f
+           // );
+           //
            IsChosingDir = false;
            Arrow.SetActive(false);
 
@@ -660,43 +689,7 @@ private Vector3 GetMouseWorldPosition()
    
    
    
-   private void OnDrawGizmos()
-   {
-     
-      if (!Application.isPlaying) 
-         return; 
-    
-
-      if (_feetColl == null) return;
-      BoxCollider feetBox = (BoxCollider)_feetColl;
-
-
-      Vector3 halfExtents = feetBox.size / 2f; 
-      float checkHeight = (feetBox.size.y / 2f) + MoveStats.groundDetectionRayLength;
-    
-      Vector3 overlapHalfExtents = new Vector3(
-         halfExtents.x, 
-         checkHeight / 2f, 
-         halfExtents.z     
-      );
-
-      if (overlapHalfExtents.z == 0) overlapHalfExtents.z = 0.05f; 
-
-      Vector3 center = feetBox.bounds.center;
-      center.y -= MoveStats.groundDetectionRayLength+0.05f;
-
-
-      if (isGrounded)
-      {
-         Gizmos.color = new Color(0f, 1f, 0f, 0.5f); 
-      }
-      else
-      {
-         Gizmos.color = new Color(1f, 0f, 0f, 0.5f); 
-      }
-
-      Gizmos.DrawWireCube(center, overlapHalfExtents * 2f);
-   }
+   
    
    private void ApplyGrapplePropulsion()
    {
@@ -709,7 +702,12 @@ private Vector3 GetMouseWorldPosition()
    
    public void InitiateGrappleLaunch(float verticalImpulse)
    {
- 
+      
+      // SfxManager.instance.PlaySFX(
+      //    SfxManager.instance.grapple,
+      //    0.3f
+      // );
+      //
       VerticalVelocity = verticalImpulse; 
       
       isFloatingFromGrapple = true; 

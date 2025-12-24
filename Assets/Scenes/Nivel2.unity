@@ -3842,7 +3842,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 0.16
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -11407,6 +11407,10 @@ PrefabInstance:
       propertyPath: staticOffset.z
       value: -37.9
       objectReference: {fileID: 0}
+    - target: {fileID: 1256085560694646137, guid: f2a430b72877f494d8acbcd9cbb65554, type: 3}
+      propertyPath: lookAheadOffset
+      value: -6
+      objectReference: {fileID: 0}
     - target: {fileID: 4803792864823571657, guid: f2a430b72877f494d8acbcd9cbb65554, type: 3}
       propertyPath: m_LocalPosition.x
       value: 121.80373
@@ -11624,6 +11628,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1502906930259818685, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1634058216170869598, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: energy
       value: 100
@@ -11650,11 +11658,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 41.5
+      value: 43.51
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.09
+      value: 7.16
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.z

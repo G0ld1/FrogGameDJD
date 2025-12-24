@@ -50,6 +50,10 @@ public class TimeAura : MonoBehaviour
 
         if (isActive)
         {
+            // SfxManager.instance.PlaySFX(
+            //     SfxManager.instance.slowdown,
+            //     0.8f
+            // );
             energy -= consumptionRate * Time.deltaTime;
         }
         else if (energy < maxEnergy)
