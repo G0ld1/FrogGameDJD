@@ -2,33 +2,63 @@ using UnityEngine;
 
 public class PatrolMovement : MonoBehaviour, IMovementBehavior
 {
+    public enum MovementAxis { Horizontal, Vertical }
+    
+    [Header("Configura√ß√£o de Patrulha")]
+    public MovementAxis movementType = MovementAxis.Horizontal;
     public float speed = 2f;
-    public float patrolDistance = 4f; // quanto ele anda para cada lado
+    public float patrolDistance = 4f;
 
     private Rigidbody rb;
     private Vector3 startPos;
-    private bool movingRight = true;
+    private bool movingForward = true; 
     public Animator pedra_animator;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
-        pedra_animator = GetComponent<Animator>();
+        if (pedra_animator == null) pedra_animator = GetComponent<Animator>();
+        
+      
+        if (movementType == MovementAxis.Vertical)
+        {
+            rb.useGravity = false;
+        }
     }
 
     public void Move(Transform enemy)
     {
-        pedra_animator.SetBool("Andar", true);
+        if (pedra_animator != null) pedra_animator.SetBool("Andar", true);
+
+        if (movementType == MovementAxis.Horizontal)
+        {
+            HandleHorizontal(enemy);
+        }
+        else
+        {
+            HandleVertical(enemy);
+        }
+    }
+
+    private void HandleHorizontal(Transform enemy)
+    {
         float offset = enemy.position.x - startPos.x;
 
-        // mudou de direÁ„o ao atingir a dist‚ncia limite
-        if (offset >= patrolDistance)
-            movingRight = false;
-        else if (offset <= -patrolDistance)
-            movingRight = true;
+        if (offset >= patrolDistance) movingForward = false;
+        else if (offset <= -patrolDistance) movingForward = true;
 
-        // define velocidade no eixo X (com gravidade ativa)
-        rb.linearVelocity = new Vector3(movingRight ? speed : -speed, rb.linearVelocity.y, rb.linearVelocity.z);
+        rb.linearVelocity = new Vector3(movingForward ? speed : -speed, rb.linearVelocity.y, 0f);
+    }
+
+    private void HandleVertical(Transform enemy)
+    {
+        float offset = enemy.position.y - startPos.y;
+
+        if (offset >= patrolDistance) movingForward = false;
+        else if (offset <= -patrolDistance) movingForward = true;
+
+  
+        rb.linearVelocity = new Vector3(0f, movingForward ? speed : -speed, 0f);
     }
 }

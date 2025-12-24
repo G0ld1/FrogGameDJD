@@ -25,10 +25,17 @@ public class PlayerMovement : MonoBehaviour
    [SerializeField] private float Raduis;
    [SerializeField] GameObject BashAbleObj;
    private bool NearToBashAbleObj;
-   private bool IsChosingDir;
+   public bool IsChosingDir;
    private bool IsBashing;
    [SerializeField] private float BashPower;
-
+   
+   [Header("Glide Settings")]
+   public float glideDuration = 2.0f;     // Tempo máximo de voo
+   public float glideFallSpeed = -2.0f;   // Velocidade constante de descida (ex: -2)
+   private float glideTimer;
+   private bool isGliding;
+   private bool canGlide = true;
+   
    [SerializeField] private GameObject Arrow;
    private ArrowMovement _arrowMovement;
    Vector3 BashDir;
@@ -48,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
    private RaycastHit _headhit;
    private bool isGrounded;
    private bool bumpedHead;
+   
    
    //jump vars
    public float VerticalVelocity {get; private set;}
@@ -89,10 +97,32 @@ public class PlayerMovement : MonoBehaviour
       JumpChecks();
       Bash();
 
+      // Resetar o Glide quando toca no chão
+      if (isGrounded)
+      {
+         canGlide = true;
+         isGliding = false;
+         glideTimer = 0;
+      }
+
+      // Ativação do Glide
+      if (!isGrounded && canGlide && Input.GetKeyDown(KeyCode.Space) && _rb.linearVelocity.y < 0)
+      {
+         isGliding = true;
+         canGlide = false; // Só pode ativar uma vez por salto
+         glideTimer = glideDuration;
+        
+         // RESET DA QUEDA: Para o momento de queda abrupta instantaneamente
+         VerticalVelocity = glideFallSpeed; 
+      }
+
+      // Se soltar o botão ou o tempo acabar, para o Glide
+      if (isGliding && (Input.GetKeyUp(KeyCode.Space) || glideTimer <= 0))
+      {
+         isGliding = false;
+      }
 
       Dir = Input.GetAxis("Horizontal") * MoveStats.maxRunSpeed;
-
-
    }
 
    private void FixedUpdate()
@@ -154,6 +184,8 @@ public class PlayerMovement : MonoBehaviour
       isFalling = false;
       isFastFalling = false;
       numberofJumpsUsed = 0;
+      isGliding = false; 
+      canGlide = true;   
 
       // Zera o estado de buffs/debuffs
       justBashed = false;
@@ -258,7 +290,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Time.timeScale = 0;
     
-            BashAbleObj.transform.localScale = new Vector3(1.4f, 1.4f, 1.4f); 
+       
            Arrow.SetActive(true);
           _arrowMovement.Initialize(BashAbleObj.transform);
             IsChosingDir = true;
@@ -268,7 +300,7 @@ public class PlayerMovement : MonoBehaviour
         else if (IsChosingDir && Input.GetKeyUp(KeyCode.Mouse1))
         {
            Time.timeScale = 1f;
-           BashAbleObj.transform.localScale = new Vector3(1f, 1f, 1f); 
+          
            IsChosingDir = false;
            Arrow.SetActive(false);
 
@@ -534,14 +566,25 @@ private Vector3 GetMouseWorldPosition()
          fastFallTime += Time.fixedDeltaTime;
       }
 
+      if (isGliding)
+      {
+         glideTimer -= Time.fixedDeltaTime;
+        
+         // Força uma velocidade de descida constante e suave
+         VerticalVelocity = glideFallSpeed; 
+        
+         // Aplica ao Rigidbody mantendo a movimentação horizontal
+         _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, VerticalVelocity, _rb.linearVelocity.z);
+        
+         return; // Sai da função para não aplicar a gravidade pesada por cima disto
+      }
+      
       if (!isGrounded && !isJumping)
       {
-         if (!isFalling)
-         {
-            isFalling = true;
-         }
+         if (!isFalling) isFalling = true;
          
-         VerticalVelocity =+ MoveStats.Gravity*Time.fixedDeltaTime*MoveStats.fallfromledgemult;
+         // Aplica a gravidade multiplicada pelo fator de queda de plataforma
+         VerticalVelocity += MoveStats.Gravity * MoveStats.fallfromledgemult * Time.fixedDeltaTime;
       }
 
       VerticalVelocity = Mathf.Clamp(VerticalVelocity, -MoveStats.maxFallSpeed, 160f);

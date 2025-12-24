@@ -11,6 +11,8 @@ public class PlayerManager : MonoBehaviour
     
     private PlayerMovement playerScript;
     private bool isDeadOrRespawning = false;
+    
+    public bool IsDeadOrRespawning() => isDeadOrRespawning;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -31,14 +33,17 @@ public class PlayerManager : MonoBehaviour
 
         isDeadOrRespawning = true;
         
-        rb.isKinematic = true;
-
-        Debug.Log("Morreu! A tentar respawn...");
-        
+        // 1. Notifica o GameManager IMEDIATAMENTE
         if (GameManager.Instance != null)
         {
             GameManager.Instance.PlayerLostLife();
         }
+        
+        rb.isKinematic = true;
+
+        Debug.Log("Morreu! A tentar respawn...");
+        
+   
         
         if (GameManager.Instance != null && GameManager.Instance.currentLives > 0) 
         {

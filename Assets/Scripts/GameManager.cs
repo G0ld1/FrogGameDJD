@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [Header("Referências")]
     public PlayerManager playerManager; // Referência ao PlayerManager
     
+    
     void Awake()
     {
         if (Instance == null)
@@ -49,6 +50,7 @@ public class GameManager : MonoBehaviour
 
     public void PlayerLostLife()
     {
+        
         currentLives--;
         Debug.Log("Vida perdida. Vidas restantes: " + currentLives);
         

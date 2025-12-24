@@ -12,10 +12,12 @@ public class ProjectileAttack : MonoBehaviour, IAttackBehavior
     {
         if (!canAttack) return;
 
-        Vector3 dir = (player.position - firePoint.position).normalized;
-        Quaternion rot = Quaternion.LookRotation(dir);
-
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, rot);
+        Vector3 dirToPlayer = (player.position - firePoint.position).normalized;
+        
+            Quaternion spreadRotation = Quaternion.LookRotation(dirToPlayer) * Quaternion.Euler(0, 0, 0);
+        
+            Instantiate(projectilePrefab, firePoint.position, spreadRotation);
+        
 
         enemy.GetComponent<MonoBehaviour>().StartCoroutine(CD());
     }
