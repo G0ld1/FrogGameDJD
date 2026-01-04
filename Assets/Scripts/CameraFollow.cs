@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-  [Header("Alvo e Suavização")]
+    [Header("Alvo e Suavização")]
     public Transform target;
     [Range(0.01f, 1f)]
     public float smoothTime = 0.3f; 
@@ -20,10 +20,6 @@ public class CameraFollow : MonoBehaviour
     [Tooltip("Tempo que o jogador tem de manter a nova direção antes da câmara mudar o look-ahead.")]
     public float directionChangeDelay = 0.15f; 
     
-    [Header("Free Look (Exploração)")]
-    public float freeLookSpeed = 15f; 
-    public float maxFreeLookDistance = 5f; 
-    
     [Header("Fall Look-Ahead")]
     [Tooltip("A velocidade vertical mínima para ativar o offset de queda (valor negativo).")]
     public float fallThreshold = -8f; 
@@ -34,14 +30,8 @@ public class CameraFollow : MonoBehaviour
     [Tooltip("A suavização para aplicar/remover o offset de queda.")]
     public float fallSmoothTime = 0.5f;
     
-    // Variáveis internas para Free Look
-    private Vector2 _freeLookInput = Vector2.zero; 
-    private Vector3 _currentFreeLookOffset = Vector3.zero; 
-    private Vector3 _freeLookVelocity = Vector3.zero; 
-
-    
+    // Variáveis internas
     private float _currentFallOffset = 0f;
-    // Variáveis internas para rastreamento
     private Vector3 _velocity = Vector3.zero; 
     private Vector3 currentCameraPosition;
     
@@ -49,49 +39,11 @@ public class CameraFollow : MonoBehaviour
     private float directionChangeTimer;
     private float currentFacingDirection = 1f; 
 
-    private void Update()
-    {
-        // Capturar Input de Free Look
-        float lookX = Input.GetAxis("Mouse X"); 
-        float lookY = Input.GetAxis("Mouse Y");
-    
-        _freeLookInput = new Vector2(lookX, lookY);
-
-        // Parar o Free Look se o input for pequeno
-        if (_freeLookInput.magnitude < 0.1f)
-        {
-            _freeLookInput = Vector2.zero;
-        }
-    }
-
     private void LateUpdate()
     {
         if (target == null) return;
-    
-        // A. LÓGICA DE FREE LOOK (CLAMP)
-        Vector3 desiredInputVector = new Vector3(_freeLookInput.x, _freeLookInput.y, 0f);
-
-        if (desiredInputVector.magnitude > 0.1f)
-        {
-            // Aplica o movimento e limita (Clamp)
-            Vector3 frameMovement = desiredInputVector * freeLookSpeed * Time.deltaTime;
-            _currentFreeLookOffset += frameMovement;
-            _currentFreeLookOffset = Vector3.ClampMagnitude(_currentFreeLookOffset, maxFreeLookDistance);
-            _freeLookVelocity = Vector3.zero; 
-        }
-        else
-        {
-            // Suaviza o retorno para o centro
-            _currentFreeLookOffset = Vector3.SmoothDamp(
-                _currentFreeLookOffset, 
-                Vector3.zero, 
-                ref _freeLookVelocity, 
-                smoothTime 
-            );
-        }
         
-        // B. LÓGICA DE FALL LOOK-AHEAD
-        
+        // A. LÓGICA DE FALL LOOK-AHEAD
         Rigidbody targetRb = target.GetComponent<Rigidbody>();
         if (targetRb == null) return; 
 
@@ -116,11 +68,11 @@ public class CameraFollow : MonoBehaviour
             fallSmoothTime
         );
 
-        // C. DETERMINAR O ALVO FINAL
-        Vector3 effectiveTargetPosition = target.position + _currentFreeLookOffset;
+        // B. DETERMINAR O ALVO FINAL
+        Vector3 effectiveTargetPosition = target.position;
         effectiveTargetPosition.y += _currentFallOffset;
 
-        // D. EXECUÇÃO DO FOLLOW
+        // C. EXECUÇÃO DO FOLLOW
         HandleDirectionDelay(); 
         CalculateDeadZoneFollow(effectiveTargetPosition); 
     }
@@ -128,17 +80,13 @@ public class CameraFollow : MonoBehaviour
     // CRÍTICO PARA O RESPAWN
     public void ResetCameraState()
     {
-      
-        
-        // 2. Zera todas as velocidades de SmoothDamp
+        // 1. Zera todas as velocidades de SmoothDamp
         _velocity = Vector3.zero; 
-        _freeLookVelocity = Vector3.zero; 
         
-        // 3. Zera todos os offsets
-        _currentFreeLookOffset = Vector3.zero;
+        // 2. Zera o offset de queda
         _currentFallOffset = 0f;
     
-        // 4. Teletransporta a câmara para a posição de spawn instantaneamente
+        // 3. Teletransporta a câmara para a posição de spawn instantaneamente
         Vector3 targetPos = target.position + staticOffset; 
     
         currentCameraPosition = targetPos; 
@@ -183,7 +131,6 @@ public class CameraFollow : MonoBehaviour
         float desiredYTarget = effectiveTargetPosition.y + staticOffset.y; 
 
         // --- Lógica da Zona Morta (Dead Zone) ---
-
         Vector3 deadZoneCenter = new Vector3(currentCameraPosition.x, currentCameraPosition.y, 0);
 
         // X: SmoothDamp

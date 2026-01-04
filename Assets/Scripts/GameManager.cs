@@ -83,6 +83,8 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("GAME OVER! A recarregar a cena...");
+
+        currentLives = maxLives;
         
         // Recarrega a cena atual
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

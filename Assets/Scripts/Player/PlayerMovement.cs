@@ -128,25 +128,7 @@ public class PlayerMovement : MonoBehaviour
       Dir = Input.GetAxis("Horizontal") * MoveStats.maxRunSpeed;
    }
    
-   private void HandleFootsteps()
-   {
-      bool isMoving =
-         isGrounded &&
-         Mathf.Abs(_rb.linearVelocity.x) > 0.1f &&
-         !IsChosingDir &&
-         !justBashed;
-
-      if (isMoving)
-      {
-         if (!footstepSource.isPlaying)
-            footstepSource.Play();
-      }
-      else
-      {
-         if (footstepSource.isPlaying)
-            footstepSource.Stop();
-      }
-   }
+  
 
    private void FixedUpdate()
    {
@@ -182,7 +164,7 @@ public class PlayerMovement : MonoBehaviour
          }
          
          AnimateMovement();
-        // HandleFootsteps();
+       
          
    }
    
@@ -325,11 +307,11 @@ public class PlayerMovement : MonoBehaviour
         {
            Time.timeScale = 1f;
            
-           // SfxManager.instance.PlaySFX(
-           //    SfxManager.instance.bash,
-           //    0.2f
-           // );
-           //
+           SfxManager.instance.PlaySFX(
+              SfxManager.instance.bash,
+              0.2f
+           );
+           
            IsChosingDir = false;
            Arrow.SetActive(false);
 
@@ -703,11 +685,11 @@ private Vector3 GetMouseWorldPosition()
    public void InitiateGrappleLaunch(float verticalImpulse)
    {
       
-      // SfxManager.instance.PlaySFX(
-      //    SfxManager.instance.grapple,
-      //    0.3f
-      // );
-      //
+      SfxManager.instance.PlaySFX(
+         SfxManager.instance.grapple,
+         0.3f
+      );
+      
       VerticalVelocity = verticalImpulse; 
       
       isFloatingFromGrapple = true; 

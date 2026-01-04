@@ -9,8 +9,8 @@ public class Killzone : MonoBehaviour
         if (other.CompareTag("Player"))
         {
            
-            Debug.Log(" collider ativado pelo script de killzone");
-            if (playerManager != null && !playerManager.IsDeadOrRespawning())
+            Debug.Log("collider ativado pelo script de killzone");
+            if (playerManager != null && !playerManager.IsDeadOrRespawning() && !playerManager.IsInvulnerable())
             {
                 playerManager.Die(); 
             }
