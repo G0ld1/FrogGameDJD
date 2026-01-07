@@ -8537,10 +8537,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 249047156091617228, guid: c2794b4d5529b204c93e9f0132699f96, type: 3}
-      propertyPath: audioSource
-      value: 
-      objectReference: {fileID: 847205920}
-    - target: {fileID: 249047156091617228, guid: c2794b4d5529b204c93e9f0132699f96, type: 3}
       propertyPath: displayImage
       value: 
       objectReference: {fileID: 103988281}
@@ -18633,11 +18629,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 172.6
+      value: 14.76
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 61
+      value: 1.56
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.z

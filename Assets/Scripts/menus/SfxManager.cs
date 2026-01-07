@@ -16,17 +16,9 @@ public class SfxManager : MonoBehaviour
     void Awake()
     {
         if (instance == null)
-        {
             instance = this;
-            DontDestroyOnLoad(gameObject);
-            if (audioSource == null)
-                audioSource = GetComponent<AudioSource>();
-        }
-        else if (instance != this)
-        {
+        else
             Destroy(gameObject);
-            return;
-        }
     }
 
     public void PlaySFX(AudioClip clip, float volume = 1f)
