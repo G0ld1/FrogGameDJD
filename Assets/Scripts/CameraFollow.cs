@@ -6,65 +6,68 @@ public class CameraFollow : MonoBehaviour
     [Header("Alvo e Suavização")]
     public Transform target;
     [Range(0.01f, 1f)]
-    public float smoothTime = 0.3f; 
+    public float smoothTime = 0.3f;
 
     [Header("Configuração 2.5D")]
-    public Vector3 staticOffset = new Vector3(0f, 1.5f, -10f); 
-    public float lookAheadOffset = 3.5f; 
+    public Vector3 staticOffset = new Vector3(0f, 1.5f, -10f);
+    public float lookAheadOffset = 3.5f;
 
     [Header("Zona Morta (Dead Zone)")]
-    public float deadZoneWidth = 2f; 
+    public float deadZoneWidth = 2f;
     public float deadZoneHeight = 1f;
 
     [Header("Atraso de Direção")]
     [Tooltip("Tempo que o jogador tem de manter a nova direção antes da câmara mudar o look-ahead.")]
-    public float directionChangeDelay = 0.15f; 
-    
+    public float directionChangeDelay = 0.15f;
+
+    [Header("Fallback Look-Ahead")]
+    [Tooltip("Use horizontal velocity to determine facing. Small velocities are ignored.")]
+    public float facingVelocityThreshold = 0.1f;
+
     [Header("Fall Look-Ahead")]
     [Tooltip("A velocidade vertical mínima para ativar o offset de queda (valor negativo).")]
-    public float fallThreshold = -8f; 
-    
+    public float fallThreshold = -8f;
+
     [Tooltip("O offset Y máximo a aplicar quando a cair.")]
-    public float maxFallOffset = -3f; 
-    
+    public float maxFallOffset = -3f;
+
     [Tooltip("A suavização para aplicar/remover o offset de queda.")]
     public float fallSmoothTime = 0.5f;
-    
+
     // Variáveis internas
     private float _currentFallOffset = 0f;
-    private Vector3 _velocity = Vector3.zero; 
+    private Vector3 _velocity = Vector3.zero;
     private Vector3 currentCameraPosition;
-    
+
     // Variáveis de estado
     private float directionChangeTimer;
-    private float currentFacingDirection = 1f; 
+    private float currentFacingDirection = 1f;
 
     private void LateUpdate()
     {
         if (target == null) return;
-        
+
         // A. LÓGICA DE FALL LOOK-AHEAD
         Rigidbody targetRb = target.GetComponent<Rigidbody>();
-        if (targetRb == null) return; 
+        if (targetRb == null) return;
 
+        // use Rigidbody.velocity (horizontal and vertical)
         float currentVerticalVelocity = targetRb.linearVelocity.y;
         float desiredFallOffset = 0f;
-    
+
         // Usa o threshold para ativar o offset de queda
         if (currentVerticalVelocity < fallThreshold)
         {
-            float maxFallSpeed = -112f; 
-        
+            float maxFallSpeed = -112f;
             float t = Mathf.InverseLerp(fallThreshold, maxFallSpeed, currentVerticalVelocity);
-        
             desiredFallOffset = Mathf.Lerp(0f, maxFallOffset, t);
         }
 
-        // Suaviza a aplicação do Fall Offset
+        // Suaviza a aplicação do Fall Offset (note: use z component of _velocity for this smoothing)
         _currentFallOffset = Mathf.SmoothDamp(
-            _currentFallOffset, 
-            desiredFallOffset, 
-            ref _velocity.z, 
+            _currentFallOffset,
+            desiredFallOffset,
+            ref _velocity.z,
             fallSmoothTime
         );
 
@@ -73,47 +76,45 @@ public class CameraFollow : MonoBehaviour
         effectiveTargetPosition.y += _currentFallOffset;
 
         // C. EXECUÇÃO DO FOLLOW
-        HandleDirectionDelay(); 
-        CalculateDeadZoneFollow(effectiveTargetPosition); 
+        HandleDirectionDelay(targetRb);
+        CalculateDeadZoneFollow(effectiveTargetPosition);
     }
-    
+
     // CRÍTICO PARA O RESPAWN
     public void ResetCameraState()
     {
         // 1. Zera todas as velocidades de SmoothDamp
-        _velocity = Vector3.zero; 
-        
+        _velocity = Vector3.zero;
+
         // 2. Zera o offset de queda
         _currentFallOffset = 0f;
-    
+
         // 3. Teletransporta a câmara para a posição de spawn instantaneamente
-        Vector3 targetPos = target.position + staticOffset; 
-    
-        currentCameraPosition = targetPos; 
+        Vector3 targetPos = target.position + staticOffset;
+
+        currentCameraPosition = targetPos;
         transform.position = targetPos;
     }
 
-    private void HandleDirectionDelay()
+    private void HandleDirectionDelay(Rigidbody targetRb)
     {
-        float actualDirection;
+        // Determine desired facing from horizontal velocity
+        float horizontalVel = targetRb.linearVelocity.x;
+        float desiredDirection = currentFacingDirection;
 
-        if (target.localEulerAngles.y > 90f && target.localEulerAngles.y < 270f)
+        if (Mathf.Abs(horizontalVel) > facingVelocityThreshold)
         {
-            actualDirection = -1f;
-        }
-        else
-        {
-            actualDirection = 1f; 
+            desiredDirection = horizontalVel > 0f ? 1f : -1f;
         }
 
-        if (actualDirection != currentFacingDirection)
+        if (desiredDirection != currentFacingDirection)
         {
             directionChangeTimer += Time.deltaTime;
 
             if (directionChangeTimer >= directionChangeDelay)
             {
-                currentFacingDirection = actualDirection;
-                directionChangeTimer = 0f; 
+                currentFacingDirection = desiredDirection;
+                directionChangeTimer = 0f;
             }
         }
         else
@@ -125,10 +126,10 @@ public class CameraFollow : MonoBehaviour
     private void CalculateDeadZoneFollow(Vector3 effectiveTargetPosition)
     {
         currentCameraPosition = transform.position;
-        
+
         // 1. Calcular Posição Alvo Desejada
         float desiredXTarget = effectiveTargetPosition.x + (lookAheadOffset * currentFacingDirection);
-        float desiredYTarget = effectiveTargetPosition.y + staticOffset.y; 
+        float desiredYTarget = effectiveTargetPosition.y + staticOffset.y;
 
         // --- Lógica da Zona Morta (Dead Zone) ---
         Vector3 deadZoneCenter = new Vector3(currentCameraPosition.x, currentCameraPosition.y, 0);
@@ -139,26 +140,26 @@ public class CameraFollow : MonoBehaviour
         if (Mathf.Abs(horizontalDistance) > deadZoneWidth / 2f)
         {
             currentCameraPosition.x = Mathf.SmoothDamp(
-                currentCameraPosition.x, 
-                desiredXTarget, 
-                ref _velocity.x, 
+                currentCameraPosition.x,
+                desiredXTarget,
+                ref _velocity.x,
                 smoothTime
             );
         }
-        
+
         // Y: SmoothDamp
         float verticalDistance = desiredYTarget - deadZoneCenter.y;
 
         if (Mathf.Abs(verticalDistance) > deadZoneHeight / 2f)
         {
              currentCameraPosition.y = Mathf.SmoothDamp(
-                currentCameraPosition.y, 
-                desiredYTarget, 
-                ref _velocity.y, 
+                currentCameraPosition.y,
+                desiredYTarget,
+                ref _velocity.y,
                 smoothTime
             );
         }
-        
+
         // 3. Aplicar a Restrição Z (offset estático)
         currentCameraPosition.z = staticOffset.z;
 

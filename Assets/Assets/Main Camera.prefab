@@ -153,12 +153,11 @@ MonoBehaviour:
   target: {fileID: 0}
   smoothTime: 0.302
   staticOffset: {x: 0, y: 3.45, z: -10}
-  lookAheadOffset: 3.5
+  lookAheadOffset: 6
   deadZoneWidth: 2
   deadZoneHeight: 1
   directionChangeDelay: 0.15
-  freeLookSpeed: 15
-  maxFreeLookDistance: 5
+  facingVelocityThreshold: 0.1
   fallThreshold: -8
   maxFallOffset: -3
   fallSmoothTime: 0.5
