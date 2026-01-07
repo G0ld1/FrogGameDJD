@@ -44,7 +44,7 @@ public class PauseMenuController : MonoBehaviour
     {
         Debug.Log("Carregando Menu Principal..."); // Log de depura��o
         Time.timeScale = 1f;           // Garante que o tempo volta ao normal
-        SceneManager.LoadScene("DemoScene"); // Carrega a cena do Menu Principal
+        SceneManager.LoadScene("MainMenu"); // Carrega a cena do Menu Principal
     }
 
     // Fun��o chamada para sair do jogo
