@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BashAble
   - Particle
+  - UIHearts
   layers:
   - Default
   - TransparentFX

@@ -322,6 +322,45 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5858986624061238989, guid: 6eed98f83438bc148b139fbce9fc618f, type: 3}
+--- !u!1 &54080434 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4059403977658603329, guid: 2ab90eb6afbd72748be090f5d46b0c75, type: 3}
+  m_PrefabInstance: {fileID: 1022707302}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &54080435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54080434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbcdfee015786224b91a5ed567a13aab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WinItem
+  playerManager: {fileID: 4341590045985884629}
+--- !u!65 &54080439
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54080434}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.52787787, y: 0.44006386, z: 0.2966906}
+  m_Center: {x: 0.0035264194, y: 0.19528683, z: -0.08604257}
 --- !u!1001 &68901770
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4529,6 +4568,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7635443232374445347, guid: 9c62758f974dbcb409d18cf6eea7e71a, type: 3}
   m_PrefabInstance: {fileID: 892110231}
   m_PrefabAsset: {fileID: 0}
+--- !u!120 &913367611 stripped
+LineRenderer:
+  m_CorrespondingSourceObject: {fileID: 654692753739621561, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
+  m_PrefabInstance: {fileID: 4341590045985884626}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &914122890
 GameObject:
   m_ObjectHideFlags: 0
@@ -5249,7 +5293,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4059403977658603329, guid: 2ab90eb6afbd72748be090f5d46b0c75, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 54080435}
+    - targetCorrespondingSourceObject: {fileID: 4059403977658603329, guid: 2ab90eb6afbd72748be090f5d46b0c75, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 54080439}
   m_SourcePrefab: {fileID: 100100000, guid: 2ab90eb6afbd72748be090f5d46b0c75, type: 3}
 --- !u!1001 &1022762305
 PrefabInstance:
@@ -10130,6 +10180,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7863549486786482610, guid: 374accb68d89ca44c97259fc0ec0a42b, type: 3}
+      propertyPath: m_TagString
+      value: UIHearts
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -11658,11 +11712,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 43.51
+      value: 46.2
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.16
+      value: 7.36
       objectReference: {fileID: 0}
     - target: {fileID: 5276298959345787880, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_LocalPosition.z
@@ -11708,6 +11762,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0.163
       objectReference: {fileID: 0}
+    - target: {fileID: 6236111910607550820, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
+      propertyPath: rope
+      value: 
+      objectReference: {fileID: 913367611}
     - target: {fileID: 6628546529276311296, guid: f7c10fb8f8c46d44fb47f928d72381de, type: 3}
       propertyPath: m_Size.y
       value: 0.27000004
