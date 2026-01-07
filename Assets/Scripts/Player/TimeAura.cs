@@ -1,10 +1,11 @@
+// csharp
 using UnityEngine;
 
 public class TimeAura : MonoBehaviour
 {
-[Header("Configurações")]
+    [Header("Configurações")]
     public KeyCode auraKey = KeyCode.E;
-    public GameObject auraVisual; 
+    public GameObject auraVisual;
     public float auraRadius = 5f;
     public float slowFactor = 0.5f;
 
@@ -22,13 +23,16 @@ public class TimeAura : MonoBehaviour
     {
         auraCollider = GetComponent<SphereCollider>();
         if (auraCollider == null) auraCollider = GetComponentInChildren<SphereCollider>();
-        
+
         UpdateAuraSize();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(auraKey))
+        // Support both keyboard key and input action (controller)
+        bool auraPressed = Input.GetKeyDown(auraKey) || InputManager.aurawasPressed;
+
+        if (auraPressed)
         {
             if (!isActive && energy > minEnergyToActivate)
             {
@@ -60,7 +64,7 @@ public class TimeAura : MonoBehaviour
         {
             energy += recoveryRate * Time.deltaTime;
         }
-        
+
         energy = Mathf.Clamp(energy, 0, maxEnergy);
     }
 
@@ -87,8 +91,8 @@ public class TimeAura : MonoBehaviour
 
             if (shard != null)
             {
-                
-                shard.canDamage = false; 
+
+                shard.canDamage = false;
 
                 Rigidbody rb = other.GetComponent<Rigidbody>();
                 if (rb != null)

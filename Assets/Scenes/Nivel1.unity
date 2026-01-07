@@ -3283,7 +3283,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Usa o bot\xE3o esquerdo do rato para te puxares para objetos especiais"
+  m_text: "Usa o bot\xE3o esquerdo do rato (ou o R2) para te puxares para objetos
+    especiais"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -3776,6 +3777,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 12.35
       objectReference: {fileID: 0}
+    - target: {fileID: 1831323460650297801, guid: 28d90ca91c6c65d4caa8efa047d172a8, type: 3}
+      propertyPath: playerManager
+      value: 
+      objectReference: {fileID: 7660618878774033303}
     - target: {fileID: 2465017135726221616, guid: 28d90ca91c6c65d4caa8efa047d172a8, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.58
@@ -3824,6 +3829,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5040702146084672946, guid: 28d90ca91c6c65d4caa8efa047d172a8, type: 3}
+      propertyPath: playerManager
+      value: 
+      objectReference: {fileID: 7660618878774033303}
+    - target: {fileID: 6437334749184220121, guid: 28d90ca91c6c65d4caa8efa047d172a8, type: 3}
+      propertyPath: playerManager
+      value: 
+      objectReference: {fileID: 7660618878774033303}
     - target: {fileID: 8219151481486152140, guid: 28d90ca91c6c65d4caa8efa047d172a8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 12.96
@@ -3844,6 +3857,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 35.93
       objectReference: {fileID: 0}
+    - target: {fileID: 9219505370576337034, guid: 28d90ca91c6c65d4caa8efa047d172a8, type: 3}
+      propertyPath: playerManager
+      value: 
+      objectReference: {fileID: 7660618878774033303}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5645,8 +5662,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "O bot\xE3o direito do rato deixa-te saltar em alguns objetos, projetando-te
-    na dire\xE7\xE3o oposta."
+  m_text: "O bot\xE3o direito do rato (ou L1)  deixa-te saltar em alguns objetos,
+    projetando-te na dire\xE7\xE3o oposta."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -17824,7 +17841,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "O bot\xE3o direito (Bash) tamb\xE9m funciona em inimigos"
+  m_text: "O bot\xE3o direito (ou L1) (Bash) tamb\xE9m funciona em inimigos"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}

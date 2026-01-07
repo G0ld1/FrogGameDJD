@@ -95,6 +95,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Bash",
+                    "type": "Button",
+                    "id": "6eeee829-d8b0-4085-bba3-c21c04f3be09",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Aura",
+                    "type": "Button",
+                    "id": "4592ff35-2f56-4934-b0d7-f15da9dbac4d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -497,11 +515,33 @@
                 {
                     "name": "",
                     "id": "abe291f7-8a05-4452-a0e9-c34731f1932f",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Grapple",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "23d22d2e-7d42-49b2-ab4c-e44363ee3dc8",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Bash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3606b61f-4856-4bdd-8bcd-3c26fd59edc3",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Aura",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
