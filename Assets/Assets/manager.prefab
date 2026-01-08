@@ -46,8 +46,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   pauseMenuUI: {fileID: 0}
-  player: {fileID: 0}
   volumeSlider: {fileID: 0}
+  menuButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  inputRepeatDelay: 0.25
 --- !u!114 &249047156091617228
 MonoBehaviour:
   m_ObjectHideFlags: 0

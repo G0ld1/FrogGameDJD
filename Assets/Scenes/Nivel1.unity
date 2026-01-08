@@ -1181,6 +1181,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8849579845308849108, guid: e299c82e955f8cf4997f7573f2fd8672, type: 3}
   m_PrefabInstance: {fileID: 1189509949}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &94289175 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1090905543071210149, guid: 2f00ef823a208974992185b69503276e, type: 3}
+  m_PrefabInstance: {fileID: 1360843104}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!114 &103988281 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8165105276431372635, guid: 2f00ef823a208974992185b69503276e, type: 3}
@@ -2037,6 +2048,17 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!114 &226497073 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1752214117620159586, guid: 2f00ef823a208974992185b69503276e, type: 3}
+  m_PrefabInstance: {fileID: 1360843104}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &232461669
 GameObject:
   m_ObjectHideFlags: 0
@@ -7080,6 +7102,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 898736609}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &898850313 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4470116551707300843, guid: 2f00ef823a208974992185b69503276e, type: 3}
+  m_PrefabInstance: {fileID: 1360843104}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &905671013
 GameObject:
   m_ObjectHideFlags: 0
@@ -8428,6 +8461,18 @@ PrefabInstance:
       propertyPath: pauseMenuUI
       value: 
       objectReference: {fileID: 1121852162}
+    - target: {fileID: 702765984555370942, guid: c2794b4d5529b204c93e9f0132699f96, type: 3}
+      propertyPath: 'menuButtons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 898850313}
+    - target: {fileID: 702765984555370942, guid: c2794b4d5529b204c93e9f0132699f96, type: 3}
+      propertyPath: 'menuButtons.Array.data[1]'
+      value: 
+      objectReference: {fileID: 94289175}
+    - target: {fileID: 702765984555370942, guid: c2794b4d5529b204c93e9f0132699f96, type: 3}
+      propertyPath: 'menuButtons.Array.data[2]'
+      value: 
+      objectReference: {fileID: 226497073}
     - target: {fileID: 2388295511021370878, guid: c2794b4d5529b204c93e9f0132699f96, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.9537
@@ -10182,7 +10227,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1065648399399623684, guid: 2f00ef823a208974992185b69503276e, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.205
       objectReference: {fileID: 0}
     - target: {fileID: 1065648399399623684, guid: 2f00ef823a208974992185b69503276e, type: 3}
       propertyPath: m_AnchorMax.y
@@ -10358,7 +10403,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7837530420254690155, guid: 2f00ef823a208974992185b69503276e, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.205
       objectReference: {fileID: 0}
     - target: {fileID: 7837530420254690155, guid: 2f00ef823a208974992185b69503276e, type: 3}
       propertyPath: m_AnchorMax.y
@@ -10366,7 +10411,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7837530420254690155, guid: 2f00ef823a208974992185b69503276e, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.205
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

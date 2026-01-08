@@ -1,61 +1,132 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;  // Necess�rio para carregar cenas
-using UnityEngine.UI;              // Para acessar os componentes UI (Bot�es)
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class PauseMenuController : MonoBehaviour
 {
-    public GameObject pauseMenuUI;  // Painel do menu de pausa (o Canvas ou o painel de pausa)
-   
-    public Slider volumeSlider;     // Se quiser controlar o volume no menu de pausa
+    public GameObject pauseMenuUI;
+    public Slider volumeSlider;
+
+    [Tooltip("Optional: populate with the buttons in the pause menu in order. If empty, buttons are autodiscovered.")]
+    public List<Button> menuButtons = new List<Button>();
+
+    private int currentIndex = 0;
+    private bool isPaused = false;
+
+    // input repeat control for stick/dpad
+    public float inputRepeatDelay = 0.25f;
+    private float inputTimer = 0f;
+
+    void Start()
+    {
+        if (menuButtons.Count == 0 && pauseMenuUI != null)
+        {
+            menuButtons.AddRange(pauseMenuUI.GetComponentsInChildren<Button>(true));
+        }
+
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(false);
+    }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Toggle pause with Menu action or Escape
+        if (InputManager.menuWasPressed)
         {
-            if (Time.timeScale == 1f) // O jogo n�o est� pausado
-                Pause();
-            else
-                Resume();
+            if (!isPaused) Pause();
+            else Resume();
+        }
+
+        if (!isPaused) return;
+
+        // navigation input: prefer InputManager movement.y then fallback to old Input axis
+        float nav = InputManager.movement.y;
+        if (Mathf.Abs(nav) < 0.01f)
+            nav = Input.GetAxisRaw("Vertical");
+
+        inputTimer -= Time.unscaledDeltaTime;
+
+        if (nav > 0.5f && inputTimer <= 0f)
+        {
+            MoveSelection(-1);
+            inputTimer = inputRepeatDelay;
+        }
+        else if (nav < -0.5f && inputTimer <= 0f)
+        {
+            MoveSelection(1);
+            inputTimer = inputRepeatDelay;
+        }
+
+        // submit with InputManager submit or Enter/Space/X
+        if (InputManager.submitWasPressed)
+        {
+            ActivateCurrent();
         }
     }
 
-    // Fun��o chamada para pausar o jogo
+    private void MoveSelection(int dir)
+    {
+        if (menuButtons == null || menuButtons.Count == 0) return;
+
+        currentIndex = (currentIndex + dir + menuButtons.Count) % menuButtons.Count;
+        SelectCurrent();
+    }
+
+    private void SelectCurrent()
+    {
+        var btn = menuButtons[currentIndex];
+        if (btn != null)
+        {
+            btn.Select();
+        }
+    }
+
+    private void ActivateCurrent()
+    {
+        if (menuButtons == null || menuButtons.Count == 0) return;
+
+        var btn = menuButtons[currentIndex];
+        if (btn != null)
+        {
+            btn.onClick.Invoke();
+        }
+    }
+
     public void Pause()
     {
-        Debug.Log("Jogo Pausado"); // Adicionei um log de depura��o
-        pauseMenuUI.SetActive(true); // Ativa o painel do menu de pausa
-        Time.timeScale = 0f;         // Pausa o tempo do jogo (os objetos n�o se movem)
-        Cursor.lockState = CursorLockMode.None; // Libera o cursor
-        Cursor.visible = true;            // Torna o cursor vis�vel
+        isPaused = true;
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // default select first
+        currentIndex = 0;
+        SelectCurrent();
     }
 
-    // Fun��o chamada para retomar o jogo
     public void Resume()
     {
-        Debug.Log("Jogo Retomado"); // Adicionei um log de depura��o
-        pauseMenuUI.SetActive(false);  // Desativa o painel de pausa
-        Time.timeScale = 1f;           // Retorna o tempo do jogo ao normal
-        Cursor.lockState = CursorLockMode.Locked; // Trava o cursor
-        Cursor.visible = false;           // Torna o cursor invis�vel
+        isPaused = false;
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
-    // Fun��o chamada para voltar ao Menu Principal
     public void LoadMainMenu()
     {
-        Debug.Log("Carregando Menu Principal..."); // Log de depura��o
-        Time.timeScale = 1f;           // Garante que o tempo volta ao normal
-        SceneManager.LoadScene("DemoScene"); // Carrega a cena do Menu Principal
+       
+        SceneManager.LoadScene("MainMenu");
     }
 
-    // Fun��o chamada para sair do jogo
     public void QuitGame()
     {
-        // Se o jogo estiver sendo executado no Editor, para a execu��o
         #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.isPlaying = false;
         #else
-                    // Fecha o jogo
-                    Application.Quit();
+            Application.Quit();
         #endif
     }
 }

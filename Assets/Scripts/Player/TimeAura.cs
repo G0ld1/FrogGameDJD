@@ -56,7 +56,7 @@ public class TimeAura : MonoBehaviour
         {
             SfxManager.instance.PlaySFX(
                 SfxManager.instance.slowdown,
-                0.8f
+                0.003f
             );
             energy -= consumptionRate * Time.deltaTime;
         }
